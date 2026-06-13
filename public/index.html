@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>台股情報雷達</title>
+  <link rel="stylesheet" href="/public/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <nav><span class="brand">TWSIGNAL</span><span id="updated" class="updated"></span></nav>
+    <div class="hero-copy">
+      <p class="eyebrow">7 日影音交叉情報</p>
+      <h1>台股市場<br><span>共識雷達</span></h1>
+      <p class="intro">從近期台灣財經 YouTube 影片擷取逐字稿，追蹤共同主題與個股提及。每項結論都可回查原始影片及文字證據。</p>
+    </div>
+    <div id="summary" class="summary"></div>
+  </header>
+
+  <main>
+    <section class="section validation-section">
+      <div class="section-heading"><div><p class="eyebrow">DATA INTEGRITY</p><h2>資料驗證</h2></div><span id="validationBadge" class="badge"></span></div>
+      <div id="checks" class="check-grid"></div>
+      <div id="warnings"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">MARKET CONSENSUS</p><h2>跨影片共通點</h2></div></div>
+      <div id="themes" class="theme-grid"></div>
+    </section>
+
+    <section class="section dark-panel">
+      <div class="section-heading"><div><p class="eyebrow">STOCK MENTIONS</p><h2>個股聲量排行</h2></div><p class="fine-print">提及不等於推薦，請展開證據判讀語境。</p></div>
+      <div id="stocks" class="stock-list"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><div><p class="eyebrow">SOURCE LIBRARY</p><h2>影音與逐字稿</h2></div><div id="filters" class="filters"></div></div>
+      <div id="videos" class="video-grid"></div>
+    </section>
+  </main>
+
+  <footer>本頁為公開影音內容的整理與研究工具，不構成投資建議。</footer>
+  <script type="module" src="/public/app.js"></script>
+</body>
+</html>

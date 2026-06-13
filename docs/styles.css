@@ -1,0 +1,29 @@
+:root { --ink:#101820; --paper:#f3f0e8; --lime:#c8ff2e; --muted:#667078; --line:#d2d0c9; --red:#e8513d; --green:#16794d; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,"Noto Sans TC","Microsoft JhengHei",sans-serif; }
+.hero { min-height:620px; background:var(--ink); color:white; padding:28px max(5vw,24px) 52px; position:relative; overflow:hidden; }
+.hero::after { content:""; position:absolute; right:-8vw; top:90px; width:42vw; height:42vw; border:1px solid #ffffff25; border-radius:50%; box-shadow:0 0 0 70px #ffffff08,0 0 0 140px #ffffff05; }
+nav { display:flex; justify-content:space-between; position:relative; z-index:1; }
+.brand { letter-spacing:.2em; font-weight:900; color:var(--lime); }
+.updated,.fine-print { color:#aeb5ba; font-size:13px; }
+.hero-copy { max-width:750px; margin-top:105px; position:relative; z-index:1; }
+.eyebrow { color:var(--green); font-size:12px; letter-spacing:.18em; font-weight:800; margin:0 0 12px; }
+.hero .eyebrow { color:var(--lime); }
+h1 { font-size:clamp(58px,9vw,126px); line-height:.82; letter-spacing:-.075em; margin:0; }
+h1 span { color:var(--lime); }
+.intro { max-width:590px; color:#bac1c6; font-size:17px; line-height:1.7; margin-top:32px; }
+.summary { display:grid; grid-template-columns:repeat(4,minmax(120px,1fr)); max-width:760px; gap:1px; background:#ffffff24; margin-top:48px; position:relative; z-index:1; }
+.metric { background:var(--ink); padding:20px; }.metric strong { display:block; color:var(--lime); font-size:30px; }.metric span { color:#aeb5ba; font-size:12px; }
+main { width:min(1200px,90vw); margin:auto; }.section { padding:80px 0; border-bottom:1px solid var(--line); }
+.section-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-bottom:28px; }
+h2 { margin:0; font-size:clamp(32px,5vw,58px); letter-spacing:-.05em; }.badge { padding:8px 12px; border:1px solid; font-weight:800; font-size:12px; }
+.badge.pass { color:var(--green); }.badge.fail { color:var(--red); }
+.check-grid,.theme-grid,.video-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }.check,.theme,.video { background:white; border:1px solid var(--line); padding:22px; }
+.check strong,.theme strong { display:block; font-size:18px; margin-bottom:8px; }.check small,.theme p,.video p { color:var(--muted); line-height:1.55; }
+.check.pass { border-top:4px solid var(--green); }.check.fail { border-top:4px solid var(--red); }.warnings { background:#fff1d6; padding:14px 18px; margin-top:16px; }
+.theme .count { font-size:42px; font-weight:900; color:var(--green); }.dark-panel { background:var(--ink); color:white; margin-inline:calc((100vw - min(1200px,90vw)) / -2); padding-inline:calc((100vw - min(1200px,90vw)) / 2); }
+.stock-row { display:grid; grid-template-columns:90px 1fr 100px; align-items:center; gap:16px; padding:18px 0; border-bottom:1px solid #ffffff20; }.ticker { color:var(--lime); font-weight:900; }.bar { height:9px; background:#ffffff1c; }.bar span { display:block; height:100%; background:var(--lime); }.stock-row button { background:transparent; color:white; border:1px solid #ffffff40; padding:8px; cursor:pointer; }
+.video { display:flex; flex-direction:column; }.video h3 { font-size:19px; line-height:1.35; margin:8px 0; }.video-meta { font-size:12px; color:var(--green); font-weight:700; }.video a { color:inherit; }.transcript { border-top:1px solid var(--line); margin-top:auto; padding-top:14px; }.transcript summary { cursor:pointer; font-weight:800; }.quote { border-left:3px solid var(--lime); padding-left:12px; }.filters button { padding:8px 12px; border:1px solid var(--ink); background:transparent; cursor:pointer; }.filters button.active { background:var(--ink); color:white; }
+footer { padding:40px 5vw; text-align:center; color:var(--muted); font-size:12px; }
+@media(max-width:800px){.summary,.check-grid,.theme-grid,.video-grid{grid-template-columns:1fr 1fr}.hero{min-height:auto}.section-heading{align-items:start;flex-direction:column}.stock-row{grid-template-columns:75px 1fr}.stock-row button{grid-column:1/-1}.hero-copy{margin-top:70px}}
+@media(max-width:520px){.summary,.check-grid,.theme-grid,.video-grid{grid-template-columns:1fr}h1{font-size:58px}}
