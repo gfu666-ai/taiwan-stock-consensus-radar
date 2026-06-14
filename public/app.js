@@ -1,31 +1,79 @@
-const data = await fetch("/data/dashboard.json").then(r => r.json());
 const $ = id => document.getElementById(id);
-const esc = value => String(value ?? "").replace(/[&<>\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc = value => String(value ?? "").replace(/[&<>\"]/g, character => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"
+})[character]);
+
+let data;
+try {
+  const response = await fetch("/data/dashboard.json");
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  data = await response.json();
+} catch (error) {
+  document.body.innerHTML = `<main class="load-error"><h1>資料載入失敗</h1><p>無法讀取 Dashboard 資料（${esc(error.message)}）。請重新整理，或確認 data/dashboard.json 已產生。</p></main>`;
+  throw error;
+}
+
+const videosById = new Map(data.videos.map(video => [video.id, video]));
+const statusLabels = { verified: "字幕已驗證", unavailable: "字幕不可取得", failed: "字幕過短", missing: "尚無字幕" };
+const formatTimestamp = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+const videoUrlAt = (url, seconds) => {
+  const target = new URL(url);
+  target.searchParams.set("t", `${Math.floor(seconds)}s`);
+  return target.toString();
+};
 
 $("updated").textContent = data.generatedAt ? `更新 ${new Date(data.generatedAt).toLocaleString("zh-TW")}` : "尚未產生資料";
 $("summary").innerHTML = [
-  [data.videos.length,"影片"],
-  [data.videos.filter(v=>v.transcript?.status==="verified").length,"有效逐字稿"],
-  [data.themes.length,"共通主題"],
-  [data.stocks.length,"辨識個股"]
-].map(([n,l])=>`<div class="metric"><strong>${n}</strong><span>${l}</span></div>`).join("");
+  [data.videos.length, "影片"],
+  [data.videos.filter(video => video.transcript?.status === "verified").length, "有效逐字稿"],
+  [data.themes.length, "共通主題"],
+  [data.stocks.length, "辨識個股"]
+].map(([number, label]) => `<div class="metric"><strong>${number}</strong><span>${label}</span></div>`).join("");
 
 const valid = data.validation.passed;
-$("validationBadge").className = `badge ${valid?"pass":"fail"}`;
+$("validationBadge").className = `badge ${valid ? "pass" : "fail"}`;
 $("validationBadge").textContent = valid ? "驗證通過" : "驗證未通過";
-$("checks").innerHTML = data.validation.checks.map(c=>`<article class="check ${c.passed?"pass":"fail"}"><strong>${c.passed?"通過":"未通過"} · ${esc(c.name)}</strong><small>${esc(c.detail)}</small></article>`).join("") || `<article class="check fail"><strong>尚無檢驗結果</strong></article>`;
+$("checks").innerHTML = data.validation.checks.map(check => `<article class="check ${check.passed ? "pass" : "fail"}"><strong>${check.passed ? "通過" : "未通過"} · ${esc(check.name)}</strong><small>${esc(check.detail)}</small></article>`).join("") || `<article class="check fail"><strong>尚無檢驗結果</strong></article>`;
 $("warnings").innerHTML = data.validation.warnings?.length ? `<div class="warnings">${data.validation.warnings.map(esc).join("<br>")}</div>` : "";
 
-$("themes").innerHTML = data.themes.map(t=>`<article class="theme"><span class="count">${t.videoCount}</span><strong>${esc(t.name)}</strong><p>${esc(t.summary)}</p><small>來源：${t.videoIds.map(esc).join("、")}</small></article>`).join("") || `<p>尚無跨影片主題。</p>`;
-const maxMentions = Math.max(1,...data.stocks.map(s=>s.videoCount));
-$("stocks").innerHTML = data.stocks.map(s=>`<div class="stock-row"><span class="ticker">${esc(s.ticker||"未確認")}</span><div><strong>${esc(s.name)}</strong><div class="bar"><span style="width:${s.videoCount/maxMentions*100}%"></span></div><small>${s.videoCount} 支影片提及 · ${s.mentionCount} 次文字命中</small></div><button data-stock="${esc(s.name)}">查看證據</button></div>`).join("") || `<p>尚無通過證據檢驗的個股。</p>`;
+$("themes").innerHTML = data.themes.map(theme => {
+  const evidence = theme.evidence.map(item => {
+    const video = videosById.get(item.videoId);
+    if (!video) return "";
+    return `<li><a href="${esc(videoUrlAt(video.url, item.timestampSec))}" target="_blank" rel="noopener noreferrer">${esc(video.channel)} · ${esc(formatTimestamp(item.timestampSec))}</a><span>${esc(item.matchedTerms?.join("、") || "關鍵字命中")}</span><p>${esc(item.quote)}</p></li>`;
+  }).join("");
+  return `<article class="theme"><span class="count">${theme.videoCount}</span><strong>${esc(theme.name)}</strong><p>${esc(theme.summary)}</p><small>判定條件：${esc(theme.criteria?.join(" + ") || "關鍵字命中")}</small><details><summary>查看 ${theme.videoCount} 支影片證據</summary><ul class="evidence-list">${evidence}</ul></details></article>`;
+}).join("") || `<p>尚無跨影片主題。</p>`;
 
-const statuses = ["全部",...new Set(data.videos.map(v=>v.transcript?.status||"missing"))];
-$("filters").innerHTML = statuses.map((s,i)=>`<button class="${i===0?"active":""}" data-filter="${s}">${s}</button>`).join("");
-function renderVideos(filter="全部", stock="") {
-  const rows = data.videos.filter(v => (filter==="全部" || v.transcript?.status===filter) && (!stock || v.stocks?.some(s=>s.name===stock)));
-  $("videos").innerHTML = rows.map(v=>`<article class="video"><span class="video-meta">${esc(v.channel)} · ${esc(v.publishedAt)}</span><h3><a href="${esc(v.url)}" target="_blank" rel="noreferrer">${esc(v.title)}</a></h3><p>${esc(v.summary)}</p><div class="transcript"><details><summary>逐字稿證據 · ${esc(v.transcript?.status||"missing")}</summary><p>${esc(v.transcript?.charCount||0)} 字 · ${esc(v.transcript?.source||"無來源")}</p>${(v.evidence||[]).map(e=>`<p class="quote">${esc(e.quote)} <small>${esc(e.timestamp||"")}</small></p>`).join("")}</details></div></article>`).join("") || `<p>沒有符合條件的影片。</p>`;
+const maxMentions = Math.max(1, ...data.stocks.map(stock => stock.videoCount));
+$("stocks").innerHTML = data.stocks.map(stock => `<div class="stock-row"><span class="ticker">${esc(stock.ticker || "未確認")}</span><div><strong>${esc(stock.name)}</strong><div class="bar"><span style="width:${stock.videoCount / maxMentions * 100}%"></span></div><small>${stock.videoCount} 支影片提及 · ${stock.mentionCount} 次文字命中</small></div><button data-stock="${esc(stock.name)}">查看證據</button></div>`).join("") || `<p>尚無通過證據檢驗的個股。</p>`;
+
+const statuses = ["全部", ...new Set(data.videos.map(video => video.transcript?.status || "missing"))];
+$("filters").innerHTML = statuses.map((status, index) => `<button class="${index === 0 ? "active" : ""}" data-filter="${status}">${status === "全部" ? status : statusLabels[status] || status}</button>`).join("");
+
+function renderVideos(filter = "全部", stock = "") {
+  const rows = data.videos.filter(video =>
+    (filter === "全部" || video.transcript?.status === filter) &&
+    (!stock || video.stocks?.some(item => item.name === stock))
+  );
+  $("videoContext").innerHTML = stock ? `目前顯示：<strong>${esc(stock)}</strong> 的原文證據 <button id="clearStock" type="button">清除個股篩選</button>` : "";
+  $("videos").innerHTML = rows.map(video => {
+    const transcriptStatus = video.transcript?.status || "missing";
+    const evidence = (video.evidence || []).map(item => `<p class="quote"><a href="${esc(videoUrlAt(video.url, item.timestampSec))}" target="_blank" rel="noopener noreferrer">${esc(item.stock)} · ${esc(formatTimestamp(item.timestampSec))}</a> ${esc(item.quote)}</p>`).join("");
+    return `<article class="video"><span class="video-meta">${esc(video.channel)} · ${esc(video.publishedAt)}</span><h3><a href="${esc(video.url)}" target="_blank" rel="noopener noreferrer">${esc(video.title)}</a></h3><p>${esc(video.summary)}</p><div class="transcript"><details><summary>逐字稿證據 · ${esc(statusLabels[transcriptStatus] || transcriptStatus)}</summary><p>${esc(video.transcript?.charCount || 0)} 字 · ${esc(video.transcript?.source || "無來源")}</p>${evidence || `<p class="quote">此影片沒有通過規則的個股證據。</p>`}</details></div></article>`;
+  }).join("") || `<p>沒有符合條件的影片。</p>`;
+  $("clearStock")?.addEventListener("click", () => renderVideos(filter));
 }
+
 renderVideos();
-$("filters").addEventListener("click",e=>{if(!e.target.dataset.filter)return;document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));e.target.classList.add("active");renderVideos(e.target.dataset.filter);});
-$("stocks").addEventListener("click",e=>{if(e.target.dataset.stock){renderVideos("全部",e.target.dataset.stock);$("videos").scrollIntoView({behavior:"smooth"});}});
+$("filters").addEventListener("click", event => {
+  if (!event.target.dataset.filter) return;
+  document.querySelectorAll("#filters button").forEach(button => button.classList.remove("active"));
+  event.target.classList.add("active");
+  renderVideos(event.target.dataset.filter);
+});
+$("stocks").addEventListener("click", event => {
+  if (!event.target.dataset.stock) return;
+  renderVideos("全部", event.target.dataset.stock);
+  $("videos").scrollIntoView({ behavior: "smooth" });
+});

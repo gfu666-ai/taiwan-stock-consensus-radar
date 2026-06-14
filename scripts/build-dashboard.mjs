@@ -17,16 +17,59 @@ const stockDictionary = [
 ];
 
 const themeDefinitions = [
-  { name: "AI 需求仍是科技股主軸", terms: ["AI"], summary: "多支影片把 AI 需求連結至半導體、伺服器、光通訊或終端應用，但對估值與追價風險看法不一。" },
-  { name: "SpaceX 與低軌衛星供應鏈", terms: ["SpaceX", "低軌衛星"], summary: "SpaceX 上市與低軌衛星題材被反覆討論，焦點落在台灣 PCB、射頻與化合物半導體供應鏈。" },
-  { name: "反彈行情仍需風險控管", terms: ["反彈", "風險"], summary: "節目普遍承認指數或個股出現反彈，同時提醒波動、估值與技術面確認仍重要。" },
-  { name: "月線作為權值股判斷基準", terms: ["月線"], summary: "分析者多次用月線判斷台積電、鴻海、聯發科等權值股是否轉強或仍在整理。" },
-  { name: "記憶體與被動元件短線升溫", terms: ["記憶體", "被動"], summary: "記憶體與被動元件在盤勢劇烈波動中成為短線焦點，影片同時討論族群輪動與追價風險。" }
+  { name: "AI 需求仍是科技股主軸", groups: [{ label: "AI", terms: ["AI", "人工智慧"] }], summary: "多支影片把 AI 需求連結至半導體、伺服器、光通訊或終端應用，但對估值與追價風險看法不一。" },
+  { name: "SpaceX 與低軌衛星供應鏈", groups: [{ label: "衛星題材", terms: ["SpaceX", "低軌衛星"] }], summary: "SpaceX 上市與低軌衛星題材被反覆討論，焦點落在台灣 PCB、射頻與化合物半導體供應鏈。" },
+  { name: "反彈行情仍需風險控管", groups: [
+    { label: "反彈", terms: ["反彈", "回升", "V轉"] },
+    { label: "風險控管", terms: ["風險", "別急追", "不要追", "追價", "停損"] }
+  ], summary: "同一段討論同時出現反彈訊號與風險提醒，顯示分析者並未把反彈直接視為趨勢確認。" },
+  { name: "月線作為權值股判斷基準", groups: [{ label: "月線", terms: ["月線"] }], summary: "分析者多次用月線判斷台積電、鴻海、聯發科等權值股是否轉強或仍在整理。" },
+  { name: "記憶體／被動元件短線升溫", groups: [{ label: "族群", terms: ["記憶體", "被動元件"] }], summary: "記憶體或被動元件在盤勢劇烈波動中成為短線焦點；此處不把被動 ETF 的討論計入被動元件。" }
 ];
 
-function matchingSegments(transcript, terms) {
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function includesTerm(text, term) {
+  if (/^[a-z0-9]+$/i.test(term)) {
+    return new RegExp(`(^|[^a-z0-9])${escapeRegExp(term)}($|[^a-z0-9])`, "i").test(text);
+  }
+  return text.toLowerCase().includes(term.toLowerCase());
+}
+
+function contextEvidence(transcript, anchorIndex, radius, matchedTerms) {
+  const from = Math.max(0, anchorIndex - radius);
+  const to = Math.min(transcript.segments.length, anchorIndex + radius + 1);
+  const context = transcript.segments.slice(from, to);
+  return {
+    segmentId: transcript.segments[anchorIndex].id,
+    contextSegmentIds: context.map(segment => segment.id),
+    quote: context.map(segment => segment.text).join(" "),
+    timestampSec: transcript.segments[anchorIndex].startSec,
+    matchedTerms: [...new Set(matchedTerms)]
+  };
+}
+
+function findThemeEvidence(transcript, definition) {
+  if (transcript?.status !== "verified") return null;
+  const proximityRadius = definition.groups.length > 1 ? 6 : 0;
+  for (let index = 0; index < transcript.segments.length; index += 1) {
+    const from = Math.max(0, index - proximityRadius);
+    const to = Math.min(transcript.segments.length, index + proximityRadius + 1);
+    const nearbyText = transcript.segments.slice(from, to).map(segment => segment.text).join(" ");
+    const groupMatches = definition.groups.map(group => group.terms.filter(term => includesTerm(nearbyText, term)));
+    if (groupMatches.every(matches => matches.length > 0)) {
+      const anchorMatches = definition.groups.flatMap(group => group.terms).filter(term => includesTerm(transcript.segments[index].text, term));
+      if (anchorMatches.length > 0) return contextEvidence(transcript, index, Math.max(2, proximityRadius), groupMatches.flat());
+    }
+  }
+  return null;
+}
+
+function matchingSegmentIndexes(transcript, terms) {
   if (transcript?.status !== "verified") return [];
-  return transcript.segments.filter(segment => terms.some(term => segment.text.toLowerCase().includes(term.toLowerCase())));
+  return transcript.segments.flatMap((segment, index) => terms.some(term => includesTerm(segment.text, term)) ? [index] : []);
 }
 
 const stocks = stockDictionary.map(([ticker, name]) => {
@@ -34,10 +77,10 @@ const stocks = stockDictionary.map(([ticker, name]) => {
   let mentionCount = 0;
   for (const source of sources) {
     const transcript = transcriptById.get(source.id);
-    const segments = matchingSegments(transcript, [name]);
-    const count = transcript?.status === "verified" ? (transcript.text.match(new RegExp(name, "g")) || []).length : 0;
+    const indexes = matchingSegmentIndexes(transcript, [name]);
+    const count = transcript?.status === "verified" ? (transcript.text.match(new RegExp(escapeRegExp(name), "g")) || []).length : 0;
     mentionCount += count;
-    if (segments.length) evidence.push({ videoId: source.id, segmentId: segments[0].id, quote: segments[0].text, timestampSec: segments[0].startSec });
+    if (indexes.length) evidence.push({ videoId: source.id, ...contextEvidence(transcript, indexes[0], 1, [name]) });
   }
   return { ticker, name, videoCount: evidence.length, mentionCount, evidence };
 }).filter(stock => stock.videoCount > 0).sort((a,b) => b.videoCount - a.videoCount || b.mentionCount - a.mentionCount);
@@ -46,10 +89,17 @@ const themes = themeDefinitions.map(definition => {
   const evidence = [];
   for (const source of sources) {
     const transcript = transcriptById.get(source.id);
-    const segments = matchingSegments(transcript, definition.terms);
-    if (segments.length) evidence.push({ videoId: source.id, segmentId: segments[0].id, quote: segments[0].text, timestampSec: segments[0].startSec });
+    const match = findThemeEvidence(transcript, definition);
+    if (match) evidence.push({ videoId: source.id, ...match });
   }
-  return { ...definition, videoCount: evidence.length, videoIds: evidence.map(item => item.videoId), evidence };
+  return {
+    name: definition.name,
+    criteria: definition.groups.map(group => group.label),
+    summary: definition.summary,
+    videoCount: evidence.length,
+    videoIds: evidence.map(item => item.videoId),
+    evidence
+  };
 }).filter(theme => theme.videoCount >= 2).sort((a,b) => b.videoCount - a.videoCount);
 
 const summaries = {
@@ -67,7 +117,7 @@ const summaries = {
 const videos = sources.map(source => {
   const transcript = transcriptById.get(source.id) || { status: "unavailable", charCount: 0, source: "未執行" };
   const videoStocks = stocks.filter(stock => stock.evidence.some(item => item.videoId === source.id)).map(stock => ({ticker: stock.ticker, name: stock.name}));
-  const evidence = stocks.flatMap(stock => stock.evidence.filter(item => item.videoId === source.id).map(item => ({ quote: item.quote, timestamp: `${Math.floor(item.timestampSec/60)}:${String(Math.floor(item.timestampSec%60)).padStart(2,"0")}`, stock: stock.name }))).slice(0, 4);
+  const evidence = stocks.flatMap(stock => stock.evidence.filter(item => item.videoId === source.id).map(item => ({ quote: item.quote, timestampSec: item.timestampSec, stock: stock.name }))).slice(0, 4);
   return {
     id: source.id, title: source.title, url: source.url, channel: source.channel,
     publishedAt: source.publishedAt, duration: source.duration, dateEvidence: source.dateEvidence,
@@ -77,11 +127,21 @@ const videos = sources.map(source => {
 });
 
 const verified = videos.filter(video => video.transcript.status === "verified");
+const allEvidence = [...stocks.flatMap(stock => stock.evidence), ...themes.flatMap(theme => theme.evidence)];
+const evidenceTraceable = evidence => {
+  const transcript = transcriptById.get(evidence.videoId);
+  if (!transcript || !evidence.contextSegmentIds?.includes(evidence.segmentId)) return false;
+  const segments = new Map(transcript.segments.map(segment => [segment.id, segment.text]));
+  return evidence.contextSegmentIds.every(id => segments.has(id)) &&
+    evidence.contextSegmentIds.map(id => segments.get(id)).join(" ") === evidence.quote &&
+    evidence.matchedTerms?.every(term => includesTerm(evidence.quote, term));
+};
 const checks = [
   { name: "7 日內素材", passed: videos.length > 0 && videos.every(v => v.publishedAt.slice(0,10) >= "2026-06-07" && v.publishedAt.slice(0,10) <= "2026-06-13"), detail: `${videos.length} 支影片均落在 2026-06-07 至 2026-06-13` },
   { name: "逐字稿非空", passed: verified.length > 0 && verified.every(v => v.transcript.charCount >= 100 && v.transcript.sha256), detail: `${verified.length} 份通過，${videos.length-verified.length} 份字幕不可得` },
-  { name: "工作2確有輸出", passed: stocks.length > 0 && themes.length > 0, detail: `${stocks.length} 檔個股、${themes.length} 個跨影片主題` },
-  { name: "分析可回查", passed: stocks.every(stock => stock.evidence.length > 0) && themes.every(theme => theme.evidence.length >= 2), detail: "每檔個股與共通主題均連回逐字稿 segment" },
+  { name: "分析結果", passed: stocks.length > 0 && themes.length > 0, detail: `${stocks.length} 檔個股、${themes.length} 個跨影片主題` },
+  { name: "分析可回查", passed: allEvidence.length > 0 && allEvidence.every(evidenceTraceable), detail: "每項證據均保留連續字幕上下文、錨點及命中詞" },
+  { name: "主題去重與語意", passed: themes.every(theme => theme.videoCount === new Set(theme.videoIds).size) && allEvidence.every(evidence => !evidence.matchedTerms.includes("被動")), detail: "每支影片每個主題只計一次，且不以模糊的「被動」判定被動元件" },
   { name: "失敗資料隔離", passed: videos.filter(v=>v.transcript.status!=="verified").every(v=>v.evidence.length===0), detail: "無逐字稿影片未參與個股與主題抽取" }
 ];
 

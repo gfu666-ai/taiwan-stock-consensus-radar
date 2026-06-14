@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T14:05:10.988Z",
+  "generatedAt": "2026-06-14T02:38:50.012Z",
   "window": {
     "timezone": "Asia/Taipei",
     "from": "2026-06-07",
@@ -71,23 +71,23 @@
       ],
       "evidence": [
         {
-          "quote": "台積電ADR在盤前也由黑翻紅",
-          "timestamp": "3:03",
+          "quote": "500多點了 台積電ADR在盤前也由黑翻紅 所以真的和談有譜了嗎",
+          "timestampSec": 183.346,
           "stock": "台積電"
         },
         {
-          "quote": "鴻海還壓在月線之下",
-          "timestamp": "0:25",
+          "quote": "但是今天大盤在反彈的時候 鴻海還壓在月線之下 不只鴻海有三檔大型權值股",
+          "timestampSec": 25.4,
           "stock": "鴻海"
         },
         {
-          "quote": "聯發科站回來",
-          "timestamp": "11:25",
+          "quote": "今天台積電站回來 聯發科站回來 日月光投控也站回來了 大型股",
+          "timestampSec": 685.36,
           "stock": "聯發科"
         },
         {
-          "quote": "帆宣 跟聖暉* 今天的股價走勢",
-          "timestamp": "16:22",
+          "quote": "我們來看漢唐 亞翔 帆宣 跟聖暉* 今天的股價走勢 好 先看漢唐",
+          "timestampSec": 982.826,
           "stock": "帆宣"
         }
       ],
@@ -149,23 +149,23 @@
       ],
       "evidence": [
         {
-          "quote": "啟碁、穩懋",
-          "timestamp": "16:44",
+          "quote": "例如地面站的 啟碁、穩懋 也值得留意追蹤",
+          "timestampSec": 1004.97,
           "stock": "穩懋"
         },
         {
-          "quote": "華通是全球低軌衛星印刷電路板",
-          "timestamp": "14:57",
+          "quote": "我們先說最重要的這一檔 華通是全球低軌衛星印刷電路板 就是PCB的龍頭",
+          "timestampSec": 897.062,
           "stock": "華通"
         },
         {
-          "quote": "第二檔是昇達科",
-          "timestamp": "15:59",
+          "quote": "跟著衝上去 第二檔是昇達科 台股衛星純度最高的一檔",
+          "timestampSec": 959.925,
           "stock": "昇達科"
         },
         {
-          "quote": "啟碁、穩懋",
-          "timestamp": "16:44",
+          "quote": "例如地面站的 啟碁、穩懋 也值得留意追蹤",
+          "timestampSec": 1004.97,
           "stock": "啟碁"
         }
       ],
@@ -255,23 +255,23 @@
       ],
       "evidence": [
         {
-          "quote": "台積電賣的價格大概是160",
-          "timestamp": "38:29",
+          "quote": "世界我是不是很準 我說什麼 台積電賣的價格大概是160 160畫過去",
+          "timestampSec": 2309.39,
           "stock": "台積電"
         },
         {
-          "quote": "鴻海啊 聯發科",
-          "timestamp": "5:41",
+          "quote": "一開始推薦那種什麼 鴻海啊 聯發科 誰知道這一波聯發科漲最多",
+          "timestampSec": 341.408,
           "stock": "鴻海"
         },
         {
-          "quote": "鴻海啊 聯發科",
-          "timestamp": "5:41",
+          "quote": "一開始推薦那種什麼 鴻海啊 聯發科 誰知道這一波聯發科漲最多",
+          "timestampSec": 341.408,
           "stock": "聯發科"
         },
         {
-          "quote": "環球晶和帆宣",
-          "timestamp": "1:06",
+          "quote": "叫大家拉回就要用力買的 環球晶和帆宣 今天都漲停了",
+          "timestampSec": 66.949,
           "stock": "帆宣"
         }
       ],
@@ -325,13 +325,13 @@
       ],
       "evidence": [
         {
-          "quote": "大家當然對台積電非常理解",
-          "timestamp": "6:39",
+          "quote": "它各種功能都可以配合 大家當然對台積電非常理解 台積電是全球最大的",
+          "timestampSec": 399.266,
           "stock": "台積電"
         },
         {
-          "quote": "穩懋",
-          "timestamp": "0:34",
+          "quote": "化合物半導體的代工龍頭 穩懋 今天非常榮幸邀請到",
+          "timestampSec": 34.74,
           "stock": "穩懋"
         }
       ],
@@ -377,23 +377,23 @@
       ],
       "evidence": [
         {
-          "quote": "台積電連聯發科都衝到5000元",
-          "timestamp": "3:47",
+          "quote": "它已經落後別的太多了 台積電連聯發科都衝到5000元 它漲個500元",
+          "timestampSec": 227.26,
           "stock": "台積電"
         },
         {
-          "quote": "好 那所以鴻海",
-          "timestamp": "1:25",
+          "quote": "現在到這裡而已 現在還沒有 好 那所以鴻海 我記得看到好多人",
+          "timestampSec": 85.752,
           "stock": "鴻海"
         },
         {
-          "quote": "台積電連聯發科都衝到5000元",
-          "timestamp": "3:47",
+          "quote": "它已經落後別的太多了 台積電連聯發科都衝到5000元 它漲個500元",
+          "timestampSec": 227.26,
           "stock": "聯發科"
         },
         {
-          "quote": "但是現在金居還沒有",
-          "timestamp": "1:19",
+          "quote": "嗯好 但是現在金居還沒有 還沒有啊 現在金居還沒有",
+          "timestampSec": 79.913,
           "stock": "金居"
         }
       ],
@@ -471,23 +471,23 @@
       ],
       "evidence": [
         {
-          "quote": "從台積電先來看起",
-          "timestamp": "13:40",
+          "quote": "所以我們就先來看權值股 從台積電先來看起 這個台積電",
+          "timestampSec": 820.886,
           "stock": "台積電"
         },
         {
-          "quote": "站上300元的鴻海",
-          "timestamp": "1:36",
+          "quote": "上個禮拜大家很開心 站上300元的鴻海 結果今天(6/8)就跌到了270了",
+          "timestampSec": 96.096,
           "stock": "鴻海"
         },
         {
-          "quote": "另外也是近期的熱門股的聯發科",
-          "timestamp": "17:47",
+          "quote": "待會我們好好的來解析一下鴻海 另外也是近期的熱門股的聯發科 嗯",
+          "timestampSec": 1067.933,
           "stock": "聯發科"
         },
         {
-          "quote": "金居的部分",
-          "timestamp": "22:18",
+          "quote": "我們這邊有一個之前的舉例 金居的部分 那其實金居啊現在已經",
+          "timestampSec": 1338.47,
           "stock": "金居"
         }
       ],
@@ -504,7 +504,7 @@
   "themes": [
     {
       "name": "AI 需求仍是科技股主軸",
-      "terms": [
+      "criteria": [
         "AI"
       ],
       "summary": "多支影片把 AI 需求連結至半導體、伺服器、光通訊或終端應用，但對估值與追價風險看法不一。",
@@ -520,81 +520,89 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0022",
-          "quote": "全世界都在看AI",
-          "timestampSec": 41.9
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0020",
+            "1A7VYBGJn70-seg-0021",
+            "1A7VYBGJn70-seg-0022",
+            "1A7VYBGJn70-seg-0023",
+            "1A7VYBGJn70-seg-0024"
+          ],
+          "quote": "今天我們一檔一檔來追 但是下半年不一樣的光景了 全世界都在看AI AI的發展非台灣不可 AI的造神時代來臨",
+          "timestampSec": 41.9,
+          "matchedTerms": [
+            "AI"
+          ]
         },
         {
           "videoId": "1O9eawPBHws",
-          "segmentId": "1O9eawPBHws-seg-0288",
-          "quote": "但那是因為XAI部門全年就燒掉",
-          "timestampSec": 571.537
+          "segmentId": "1O9eawPBHws-seg-0338",
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0336",
+            "1O9eawPBHws-seg-0337",
+            "1O9eawPBHws-seg-0338",
+            "1O9eawPBHws-seg-0339",
+            "1O9eawPBHws-seg-0340"
+          ],
+          "quote": "這不是一家火箭公司 它是一家基礎設施公司 未來的太空AI資料中心 月球基地 火星殖民",
+          "timestampSec": 683.449,
+          "matchedTerms": [
+            "AI"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0870",
-          "quote": "AI可以用在醫療上面",
-          "timestampSec": 1575.1
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0868",
+            "Jxz5TPAtRtA-seg-0869",
+            "Jxz5TPAtRtA-seg-0870",
+            "Jxz5TPAtRtA-seg-0871",
+            "Jxz5TPAtRtA-seg-0872"
+          ],
+          "quote": "大趨勢 就像我剛才講的 AI可以用在醫療上面 AI可以做很多東西 我說AI現在影片",
+          "timestampSec": 1575.1,
+          "matchedTerms": [
+            "AI"
+          ]
         },
         {
           "videoId": "i5LKgjLJLY4",
           "segmentId": "i5LKgjLJLY4-seg-0009",
-          "quote": "AI算力的興起",
-          "timestampSec": 13.84
+          "contextSegmentIds": [
+            "i5LKgjLJLY4-seg-0007",
+            "i5LKgjLJLY4-seg-0008",
+            "i5LKgjLJLY4-seg-0009",
+            "i5LKgjLJLY4-seg-0010",
+            "i5LKgjLJLY4-seg-0011"
+          ],
+          "quote": "引爆全球資金的大熱潮 同一時間 AI算力的興起 讓光通訊這個產業 這個趨勢",
+          "timestampSec": 13.84,
+          "matchedTerms": [
+            "AI"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0581",
-          "quote": "它是電子AI股",
-          "timestampSec": 1145.477
-        }
-      ]
-    },
-    {
-      "name": "反彈行情仍需風險控管",
-      "terms": [
-        "反彈",
-        "風險"
-      ],
-      "summary": "節目普遍承認指數或個股出現反彈，同時提醒波動、估值與技術面確認仍重要。",
-      "videoCount": 4,
-      "videoIds": [
-        "1A7VYBGJn70",
-        "1O9eawPBHws",
-        "Jxz5TPAtRtA",
-        "3PVZxjgx3jo"
-      ],
-      "evidence": [
-        {
-          "videoId": "1A7VYBGJn70",
-          "segmentId": "1A7VYBGJn70-seg-0013",
-          "quote": "但是今天大盤在反彈的時候",
-          "timestampSec": 23.3
-        },
-        {
-          "videoId": "1O9eawPBHws",
-          "segmentId": "1O9eawPBHws-seg-0155",
-          "quote": "第一節反彈",
-          "timestampSec": 318.184
-        },
-        {
-          "videoId": "Jxz5TPAtRtA",
-          "segmentId": "Jxz5TPAtRtA-seg-0055",
-          "quote": "那你今天不應該反彈",
-          "timestampSec": 94.1
-        },
-        {
-          "videoId": "3PVZxjgx3jo",
-          "segmentId": "3PVZxjgx3jo-seg-0859",
-          "quote": "至少你的風險應該很小",
-          "timestampSec": 1680.512
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0579",
+            "3PVZxjgx3jo-seg-0580",
+            "3PVZxjgx3jo-seg-0581",
+            "3PVZxjgx3jo-seg-0582",
+            "3PVZxjgx3jo-seg-0583"
+          ],
+          "quote": "那入袋以後再看它 因為聯發科不太一樣 它是電子AI股 如果其它的股票 有可能這個飆完就沒了",
+          "timestampSec": 1145.477,
+          "matchedTerms": [
+            "AI"
+          ]
         }
       ]
     },
     {
       "name": "SpaceX 與低軌衛星供應鏈",
-      "terms": [
-        "SpaceX",
-        "低軌衛星"
+      "criteria": [
+        "衛星題材"
       ],
       "summary": "SpaceX 上市與低軌衛星題材被反覆討論，焦點落在台灣 PCB、射頻與化合物半導體供應鏈。",
       "videoCount": 3,
@@ -607,26 +615,56 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0131",
-          "quote": "如果SpaceX",
-          "timestampSec": 271.74
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0129",
+            "1A7VYBGJn70-seg-0130",
+            "1A7VYBGJn70-seg-0131",
+            "1A7VYBGJn70-seg-0132",
+            "1A7VYBGJn70-seg-0133"
+          ],
+          "quote": "重點是在今天晚上 為什麼 如果SpaceX 沒有開高走低出大家的意料的話 最壞的狀況可能就過了",
+          "timestampSec": 271.74,
+          "matchedTerms": [
+            "SpaceX"
+          ]
         },
         {
           "videoId": "1O9eawPBHws",
           "segmentId": "1O9eawPBHws-seg-0036",
-          "quote": "他的公司 SpaceX",
-          "timestampSec": 69.169
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0034",
+            "1O9eawPBHws-seg-0035",
+            "1O9eawPBHws-seg-0036",
+            "1O9eawPBHws-seg-0037",
+            "1O9eawPBHws-seg-0038"
+          ],
+          "quote": "20幾年後的今天 2026年6月12號 他的公司 SpaceX 要在那斯達克掛牌了 估值1.77兆美金",
+          "timestampSec": 69.169,
+          "matchedTerms": [
+            "SpaceX"
+          ]
         },
         {
           "videoId": "i5LKgjLJLY4",
           "segmentId": "i5LKgjLJLY4-seg-0006",
-          "quote": "SpaceX在美股IPO掛牌上市",
-          "timestampSec": 7.806
+          "contextSegmentIds": [
+            "i5LKgjLJLY4-seg-0004",
+            "i5LKgjLJLY4-seg-0005",
+            "i5LKgjLJLY4-seg-0006",
+            "i5LKgjLJLY4-seg-0007",
+            "i5LKgjLJLY4-seg-0008"
+          ],
+          "quote": "可以說全球資本市場 迎來的最大的趨勢就是 SpaceX在美股IPO掛牌上市 引爆全球資金的大熱潮 同一時間",
+          "timestampSec": 7.806,
+          "matchedTerms": [
+            "SpaceX"
+          ]
         }
       ]
     },
     {
       "name": "月線作為權值股判斷基準",
-      "terms": [
+      "criteria": [
         "月線"
       ],
       "summary": "分析者多次用月線判斷台積電、鴻海、聯發科等權值股是否轉強或仍在整理。",
@@ -640,54 +678,97 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0014",
-          "quote": "鴻海還壓在月線之下",
-          "timestampSec": 25.4
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0012",
+            "1A7VYBGJn70-seg-0013",
+            "1A7VYBGJn70-seg-0014",
+            "1A7VYBGJn70-seg-0015",
+            "1A7VYBGJn70-seg-0016"
+          ],
+          "quote": "今天來請教專家 但是今天大盤在反彈的時候 鴻海還壓在月線之下 不只鴻海有三檔大型權值股 都還在月線之下",
+          "timestampSec": 25.4,
+          "matchedTerms": [
+            "月線"
+          ]
         },
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0013",
-          "quote": "要守月線",
-          "timestampSec": 25.025
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0011",
+            "aWpjnL3XsTQ-seg-0012",
+            "aWpjnL3XsTQ-seg-0013",
+            "aWpjnL3XsTQ-seg-0014",
+            "aWpjnL3XsTQ-seg-0015"
+          ],
+          "quote": "對不對 那我們現在看第二個 要守月線 回檔月線不破 不破前波",
+          "timestampSec": 25.025,
+          "matchedTerms": [
+            "月線"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0119",
-          "quote": "我們都知道下面的支撐就在月線",
-          "timestampSec": 227.56
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0117",
+            "3PVZxjgx3jo-seg-0118",
+            "3PVZxjgx3jo-seg-0119",
+            "3PVZxjgx3jo-seg-0120",
+            "3PVZxjgx3jo-seg-0121"
+          ],
+          "quote": "你一定要先有一個跌破5均 那回檔之後 我們都知道下面的支撐就在月線 就今天(6/8)其實是在測月線 綠色的這一塊",
+          "timestampSec": 227.56,
+          "matchedTerms": [
+            "月線"
+          ]
         }
       ]
     },
     {
-      "name": "記憶體與被動元件短線升溫",
-      "terms": [
-        "記憶體",
-        "被動"
+      "name": "記憶體／被動元件短線升溫",
+      "criteria": [
+        "族群"
       ],
-      "summary": "記憶體與被動元件在盤勢劇烈波動中成為短線焦點，影片同時討論族群輪動與追價風險。",
-      "videoCount": 3,
+      "summary": "記憶體或被動元件在盤勢劇烈波動中成為短線焦點；此處不把被動 ETF 的討論計入被動元件。",
+      "videoCount": 2,
       "videoIds": [
         "1A7VYBGJn70",
-        "1O9eawPBHws",
         "Jxz5TPAtRtA"
       ],
       "evidence": [
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0006",
-          "quote": "早上就已經先看到記憶體跟被動",
-          "timestampSec": 8.766
-        },
-        {
-          "videoId": "1O9eawPBHws",
-          "segmentId": "1O9eawPBHws-seg-0404",
-          "quote": "追蹤這些指數的被動ETF",
-          "timestampSec": 831.363
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0004",
+            "1A7VYBGJn70-seg-0005",
+            "1A7VYBGJn70-seg-0006",
+            "1A7VYBGJn70-seg-0007",
+            "1A7VYBGJn70-seg-0008"
+          ],
+          "quote": "台指期急跌之後急拉 怎麼一回事呢 早上就已經先看到記憶體跟被動 刷一排的漲停 台股今天大漲千點V轉了嗎",
+          "timestampSec": 8.766,
+          "matchedTerms": [
+            "記憶體"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0018",
-          "quote": "第二個 記憶體 被動元件是漲真的嗎",
-          "timestampSec": 28.933
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0016",
+            "Jxz5TPAtRtA-seg-0017",
+            "Jxz5TPAtRtA-seg-0018",
+            "Jxz5TPAtRtA-seg-0019",
+            "Jxz5TPAtRtA-seg-0020"
+          ],
+          "quote": "暴漲暴跌是不是大空頭 我一次講個夠 第二個 記憶體 被動元件是漲真的嗎 因為記憶體 被動元件今天很強 但是走勢不太一樣",
+          "timestampSec": 28.933,
+          "matchedTerms": [
+            "記憶體",
+            "被動元件"
+          ]
         }
       ]
     }
@@ -702,32 +783,72 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0087",
-          "quote": "台積電ADR在盤前也由黑翻紅",
-          "timestampSec": 183.346
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0086",
+            "1A7VYBGJn70-seg-0087",
+            "1A7VYBGJn70-seg-0088"
+          ],
+          "quote": "500多點了 台積電ADR在盤前也由黑翻紅 所以真的和談有譜了嗎",
+          "timestampSec": 183.346,
+          "matchedTerms": [
+            "台積電"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1281",
-          "quote": "台積電賣的價格大概是160",
-          "timestampSec": 2309.39
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1280",
+            "Jxz5TPAtRtA-seg-1281",
+            "Jxz5TPAtRtA-seg-1282"
+          ],
+          "quote": "世界我是不是很準 我說什麼 台積電賣的價格大概是160 160畫過去",
+          "timestampSec": 2309.39,
+          "matchedTerms": [
+            "台積電"
+          ]
         },
         {
           "videoId": "i5LKgjLJLY4",
           "segmentId": "i5LKgjLJLY4-seg-0196",
-          "quote": "大家當然對台積電非常理解",
-          "timestampSec": 399.266
+          "contextSegmentIds": [
+            "i5LKgjLJLY4-seg-0195",
+            "i5LKgjLJLY4-seg-0196",
+            "i5LKgjLJLY4-seg-0197"
+          ],
+          "quote": "它各種功能都可以配合 大家當然對台積電非常理解 台積電是全球最大的",
+          "timestampSec": 399.266,
+          "matchedTerms": [
+            "台積電"
+          ]
         },
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0113",
-          "quote": "台積電連聯發科都衝到5000元",
-          "timestampSec": 227.26
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0112",
+            "aWpjnL3XsTQ-seg-0113",
+            "aWpjnL3XsTQ-seg-0114"
+          ],
+          "quote": "它已經落後別的太多了 台積電連聯發科都衝到5000元 它漲個500元",
+          "timestampSec": 227.26,
+          "matchedTerms": [
+            "台積電"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0416",
-          "quote": "從台積電先來看起",
-          "timestampSec": 820.886
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0415",
+            "3PVZxjgx3jo-seg-0416",
+            "3PVZxjgx3jo-seg-0417"
+          ],
+          "quote": "所以我們就先來看權值股 從台積電先來看起 這個台積電",
+          "timestampSec": 820.886,
+          "matchedTerms": [
+            "台積電"
+          ]
         }
       ]
     },
@@ -740,26 +861,58 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0014",
-          "quote": "鴻海還壓在月線之下",
-          "timestampSec": 25.4
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0013",
+            "1A7VYBGJn70-seg-0014",
+            "1A7VYBGJn70-seg-0015"
+          ],
+          "quote": "但是今天大盤在反彈的時候 鴻海還壓在月線之下 不只鴻海有三檔大型權值股",
+          "timestampSec": 25.4,
+          "matchedTerms": [
+            "鴻海"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0200",
-          "quote": "鴻海啊 聯發科",
-          "timestampSec": 341.408
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0199",
+            "Jxz5TPAtRtA-seg-0200",
+            "Jxz5TPAtRtA-seg-0201"
+          ],
+          "quote": "一開始推薦那種什麼 鴻海啊 聯發科 誰知道這一波聯發科漲最多",
+          "timestampSec": 341.408,
+          "matchedTerms": [
+            "鴻海"
+          ]
         },
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0043",
-          "quote": "好 那所以鴻海",
-          "timestampSec": 85.752
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0042",
+            "aWpjnL3XsTQ-seg-0043",
+            "aWpjnL3XsTQ-seg-0044"
+          ],
+          "quote": "現在到這裡而已 現在還沒有 好 那所以鴻海 我記得看到好多人",
+          "timestampSec": 85.752,
+          "matchedTerms": [
+            "鴻海"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0047",
-          "quote": "站上300元的鴻海",
-          "timestampSec": 96.096
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0046",
+            "3PVZxjgx3jo-seg-0047",
+            "3PVZxjgx3jo-seg-0048"
+          ],
+          "quote": "上個禮拜大家很開心 站上300元的鴻海 結果今天(6/8)就跌到了270了",
+          "timestampSec": 96.096,
+          "matchedTerms": [
+            "鴻海"
+          ]
         }
       ]
     },
@@ -772,26 +925,58 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0338",
-          "quote": "聯發科站回來",
-          "timestampSec": 685.36
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0337",
+            "1A7VYBGJn70-seg-0338",
+            "1A7VYBGJn70-seg-0339"
+          ],
+          "quote": "今天台積電站回來 聯發科站回來 日月光投控也站回來了 大型股",
+          "timestampSec": 685.36,
+          "matchedTerms": [
+            "聯發科"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0200",
-          "quote": "鴻海啊 聯發科",
-          "timestampSec": 341.408
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0199",
+            "Jxz5TPAtRtA-seg-0200",
+            "Jxz5TPAtRtA-seg-0201"
+          ],
+          "quote": "一開始推薦那種什麼 鴻海啊 聯發科 誰知道這一波聯發科漲最多",
+          "timestampSec": 341.408,
+          "matchedTerms": [
+            "聯發科"
+          ]
         },
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0113",
-          "quote": "台積電連聯發科都衝到5000元",
-          "timestampSec": 227.26
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0112",
+            "aWpjnL3XsTQ-seg-0113",
+            "aWpjnL3XsTQ-seg-0114"
+          ],
+          "quote": "它已經落後別的太多了 台積電連聯發科都衝到5000元 它漲個500元",
+          "timestampSec": 227.26,
+          "matchedTerms": [
+            "聯發科"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0542",
-          "quote": "另外也是近期的熱門股的聯發科",
-          "timestampSec": 1067.933
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0541",
+            "3PVZxjgx3jo-seg-0542",
+            "3PVZxjgx3jo-seg-0543"
+          ],
+          "quote": "待會我們好好的來解析一下鴻海 另外也是近期的熱門股的聯發科 嗯",
+          "timestampSec": 1067.933,
+          "matchedTerms": [
+            "聯發科"
+          ]
         }
       ]
     },
@@ -804,14 +989,30 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0497",
-          "quote": "帆宣 跟聖暉* 今天的股價走勢",
-          "timestampSec": 982.826
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0496",
+            "1A7VYBGJn70-seg-0497",
+            "1A7VYBGJn70-seg-0498"
+          ],
+          "quote": "我們來看漢唐 亞翔 帆宣 跟聖暉* 今天的股價走勢 好 先看漢唐",
+          "timestampSec": 982.826,
+          "matchedTerms": [
+            "帆宣"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0037",
-          "quote": "環球晶和帆宣",
-          "timestampSec": 66.949
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0036",
+            "Jxz5TPAtRtA-seg-0037",
+            "Jxz5TPAtRtA-seg-0038"
+          ],
+          "quote": "叫大家拉回就要用力買的 環球晶和帆宣 今天都漲停了",
+          "timestampSec": 66.949,
+          "matchedTerms": [
+            "帆宣"
+          ]
         }
       ]
     },
@@ -824,14 +1025,30 @@
         {
           "videoId": "1O9eawPBHws",
           "segmentId": "1O9eawPBHws-seg-0482",
-          "quote": "啟碁、穩懋",
-          "timestampSec": 1004.97
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0481",
+            "1O9eawPBHws-seg-0482",
+            "1O9eawPBHws-seg-0483"
+          ],
+          "quote": "例如地面站的 啟碁、穩懋 也值得留意追蹤",
+          "timestampSec": 1004.97,
+          "matchedTerms": [
+            "穩懋"
+          ]
         },
         {
           "videoId": "i5LKgjLJLY4",
           "segmentId": "i5LKgjLJLY4-seg-0021",
-          "quote": "穩懋",
-          "timestampSec": 34.74
+          "contextSegmentIds": [
+            "i5LKgjLJLY4-seg-0020",
+            "i5LKgjLJLY4-seg-0021",
+            "i5LKgjLJLY4-seg-0022"
+          ],
+          "quote": "化合物半導體的代工龍頭 穩懋 今天非常榮幸邀請到",
+          "timestampSec": 34.74,
+          "matchedTerms": [
+            "穩懋"
+          ]
         }
       ]
     },
@@ -844,14 +1061,30 @@
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0039",
-          "quote": "但是現在金居還沒有",
-          "timestampSec": 79.913
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0038",
+            "aWpjnL3XsTQ-seg-0039",
+            "aWpjnL3XsTQ-seg-0040"
+          ],
+          "quote": "嗯好 但是現在金居還沒有 還沒有啊 現在金居還沒有",
+          "timestampSec": 79.913,
+          "matchedTerms": [
+            "金居"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0684",
-          "quote": "金居的部分",
-          "timestampSec": 1338.47
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0683",
+            "3PVZxjgx3jo-seg-0684",
+            "3PVZxjgx3jo-seg-0685"
+          ],
+          "quote": "我們這邊有一個之前的舉例 金居的部分 那其實金居啊現在已經",
+          "timestampSec": 1338.47,
+          "matchedTerms": [
+            "金居"
+          ]
         }
       ]
     },
@@ -864,14 +1097,30 @@
         {
           "videoId": "aWpjnL3XsTQ",
           "segmentId": "aWpjnL3XsTQ-seg-0202",
-          "quote": "聯詠",
-          "timestampSec": 397.964
+          "contextSegmentIds": [
+            "aWpjnL3XsTQ-seg-0201",
+            "aWpjnL3XsTQ-seg-0202",
+            "aWpjnL3XsTQ-seg-0203"
+          ],
+          "quote": "再來第二檔老師要給我們的是 聯詠 那聯詠基本面也是一樣",
+          "timestampSec": 397.964,
+          "matchedTerms": [
+            "聯詠"
+          ]
         },
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-1113",
-          "quote": "聯詠",
-          "timestampSec": 2170.468
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-1112",
+            "3PVZxjgx3jo-seg-1113",
+            "3PVZxjgx3jo-seg-1114"
+          ],
+          "quote": "再來第二檔老師要給我們的是 聯詠 那聯詠基本面也是一樣",
+          "timestampSec": 2170.468,
+          "matchedTerms": [
+            "聯詠"
+          ]
         }
       ]
     },
@@ -884,14 +1133,30 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0339",
-          "quote": "日月光投控也站回來了 大型股",
-          "timestampSec": 686.226
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0338",
+            "1A7VYBGJn70-seg-0339",
+            "1A7VYBGJn70-seg-0340"
+          ],
+          "quote": "聯發科站回來 日月光投控也站回來了 大型股 要這樣子講",
+          "timestampSec": 686.226,
+          "matchedTerms": [
+            "日月光"
+          ]
         },
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1435",
-          "quote": "我記得國巨還是日月光曾經要下市",
-          "timestampSec": 2606.9
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1434",
+            "Jxz5TPAtRtA-seg-1435",
+            "Jxz5TPAtRtA-seg-1436"
+          ],
+          "quote": "還曾經要下 我記得國巨還是日月光曾經要下市 對啊 後來下市不成",
+          "timestampSec": 2606.9,
+          "matchedTerms": [
+            "日月光"
+          ]
         }
       ]
     },
@@ -904,8 +1169,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0037",
-          "quote": "環球晶和帆宣",
-          "timestampSec": 66.949
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0036",
+            "Jxz5TPAtRtA-seg-0037",
+            "Jxz5TPAtRtA-seg-0038"
+          ],
+          "quote": "叫大家拉回就要用力買的 環球晶和帆宣 今天都漲停了",
+          "timestampSec": 66.949,
+          "matchedTerms": [
+            "環球晶"
+          ]
         }
       ]
     },
@@ -918,8 +1191,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0507",
-          "quote": "2408南亞科也是一堆股票",
-          "timestampSec": 916.233
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0506",
+            "Jxz5TPAtRtA-seg-0507",
+            "Jxz5TPAtRtA-seg-0508"
+          ],
+          "quote": "是不是 2408南亞科也是一堆股票 禮拜一見低點有沒有 是不是",
+          "timestampSec": 916.233,
+          "matchedTerms": [
+            "南亞科"
+          ]
         }
       ]
     },
@@ -932,8 +1213,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1192",
-          "quote": "帆宣比精材好一點點 好不好",
-          "timestampSec": 2135.633
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1191",
+            "Jxz5TPAtRtA-seg-1192",
+            "Jxz5TPAtRtA-seg-1193"
+          ],
+          "quote": "就像我跟你講說 帆宣比精材好一點點 好不好 精材怎麼看",
+          "timestampSec": 2135.633,
+          "matchedTerms": [
+            "精材"
+          ]
         }
       ]
     },
@@ -946,8 +1235,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1081",
-          "quote": "國巨 華新科你沒聽過嗎",
-          "timestampSec": 1939.833
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1080",
+            "Jxz5TPAtRtA-seg-1081",
+            "Jxz5TPAtRtA-seg-1082"
+          ],
+          "quote": "哪個人不會選到被動元件 國巨 華新科你沒聽過嗎 聯發科你沒聽過嗎 是不是",
+          "timestampSec": 1939.833,
+          "matchedTerms": [
+            "國巨"
+          ]
         }
       ]
     },
@@ -960,8 +1257,16 @@
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0848",
-          "quote": "為什麼講士電",
-          "timestampSec": 1654.419
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0847",
+            "3PVZxjgx3jo-seg-0848",
+            "3PVZxjgx3jo-seg-0849"
+          ],
+          "quote": "那各位這支股票你要鎖 為什麼講士電 因為士電是重電股裡面",
+          "timestampSec": 1654.419,
+          "matchedTerms": [
+            "士電"
+          ]
         }
       ]
     },
@@ -974,8 +1279,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-0203",
-          "quote": "環球晶 世界先進",
-          "timestampSec": 347.033
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-0202",
+            "Jxz5TPAtRtA-seg-0203",
+            "Jxz5TPAtRtA-seg-0204"
+          ],
+          "quote": "環球晶啊 這個是 環球晶 世界先進 這個是什麼",
+          "timestampSec": 347.033,
+          "matchedTerms": [
+            "世界先進"
+          ]
         }
       ]
     },
@@ -988,8 +1301,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1164",
-          "quote": "2376技嘉",
-          "timestampSec": 2081.066
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1163",
+            "Jxz5TPAtRtA-seg-1164",
+            "Jxz5TPAtRtA-seg-1165"
+          ],
+          "quote": "就花比較少時間 2376技嘉 技嘉這個走勢不太行",
+          "timestampSec": 2081.066,
+          "matchedTerms": [
+            "技嘉"
+          ]
         }
       ]
     },
@@ -1002,8 +1323,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1169",
-          "quote": "微星",
-          "timestampSec": 2090.633
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1168",
+            "Jxz5TPAtRtA-seg-1169",
+            "Jxz5TPAtRtA-seg-1170"
+          ],
+          "quote": "技嘉沒什麼跌對不對 微星 微星我覺得是下一個帆宣",
+          "timestampSec": 2090.633,
+          "matchedTerms": [
+            "微星"
+          ]
         }
       ]
     },
@@ -1016,8 +1345,16 @@
         {
           "videoId": "1O9eawPBHws",
           "segmentId": "1O9eawPBHws-seg-0432",
-          "quote": "華通是全球低軌衛星印刷電路板",
-          "timestampSec": 897.062
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0431",
+            "1O9eawPBHws-seg-0432",
+            "1O9eawPBHws-seg-0433"
+          ],
+          "quote": "我們先說最重要的這一檔 華通是全球低軌衛星印刷電路板 就是PCB的龍頭",
+          "timestampSec": 897.062,
+          "matchedTerms": [
+            "華通"
+          ]
         }
       ]
     },
@@ -1030,8 +1367,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0425",
-          "quote": "就是華景電",
-          "timestampSec": 846.04
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0424",
+            "1A7VYBGJn70-seg-0425",
+            "1A7VYBGJn70-seg-0426"
+          ],
+          "quote": "領頭羊就是誰 就是華景電 那我說他是嚴重被低估的",
+          "timestampSec": 846.04,
+          "matchedTerms": [
+            "華景電"
+          ]
         }
       ]
     },
@@ -1044,8 +1389,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1277",
-          "quote": "世界跟聯電是不是要噴了",
-          "timestampSec": 2299.7
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1276",
+            "Jxz5TPAtRtA-seg-1277",
+            "Jxz5TPAtRtA-seg-1278"
+          ],
+          "quote": "你們太多人了 等一下 世界跟聯電是不是要噴了 我們看一下世界跟聯電",
+          "timestampSec": 2299.7,
+          "matchedTerms": [
+            "聯電"
+          ]
         }
       ]
     },
@@ -1058,8 +1411,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0393",
-          "quote": "你會看到比如說漢唐",
-          "timestampSec": 782.58
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0392",
+            "1A7VYBGJn70-seg-0393",
+            "1A7VYBGJn70-seg-0394"
+          ],
+          "quote": "以這個來看 你會看到比如說漢唐 最近一次股東會",
+          "timestampSec": 782.58,
+          "matchedTerms": [
+            "漢唐"
+          ]
         }
       ]
     },
@@ -1072,8 +1433,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0399",
-          "quote": "聖暉*也是在蓋廠房相關的",
-          "timestampSec": 793.713
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0398",
+            "1A7VYBGJn70-seg-0399",
+            "1A7VYBGJn70-seg-0400"
+          ],
+          "quote": "這個是專門在幫台積電蓋廠房的 聖暉*也是在蓋廠房相關的 他在手的訂單有550億",
+          "timestampSec": 793.713,
+          "matchedTerms": [
+            "聖暉"
+          ]
         }
       ]
     },
@@ -1086,8 +1455,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0496",
-          "quote": "我們來看漢唐 亞翔",
-          "timestampSec": 980.726
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0495",
+            "1A7VYBGJn70-seg-0496",
+            "1A7VYBGJn70-seg-0497"
+          ],
+          "quote": "我們看下一張字卡 我們來看漢唐 亞翔 帆宣 跟聖暉* 今天的股價走勢",
+          "timestampSec": 980.726,
+          "matchedTerms": [
+            "亞翔"
+          ]
         }
       ]
     },
@@ -1100,8 +1477,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-0985",
-          "quote": "抓台燿",
-          "timestampSec": 1920.253
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-0984",
+            "1A7VYBGJn70-seg-0985",
+            "1A7VYBGJn70-seg-0986"
+          ],
+          "quote": "我們抓三檔來看好了 抓台燿 我覺得最近比較值得關注的部分",
+          "timestampSec": 1920.253,
+          "matchedTerms": [
+            "台燿"
+          ]
         }
       ]
     },
@@ -1114,8 +1499,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1081",
-          "quote": "國巨 華新科你沒聽過嗎",
-          "timestampSec": 1939.833
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1080",
+            "Jxz5TPAtRtA-seg-1081",
+            "Jxz5TPAtRtA-seg-1082"
+          ],
+          "quote": "哪個人不會選到被動元件 國巨 華新科你沒聽過嗎 聯發科你沒聽過嗎 是不是",
+          "timestampSec": 1939.833,
+          "matchedTerms": [
+            "華新科"
+          ]
         }
       ]
     },
@@ -1128,8 +1521,16 @@
         {
           "videoId": "1O9eawPBHws",
           "segmentId": "1O9eawPBHws-seg-0461",
-          "quote": "第二檔是昇達科",
-          "timestampSec": 959.925
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0460",
+            "1O9eawPBHws-seg-0461",
+            "1O9eawPBHws-seg-0462"
+          ],
+          "quote": "跟著衝上去 第二檔是昇達科 台股衛星純度最高的一檔",
+          "timestampSec": 959.925,
+          "matchedTerms": [
+            "昇達科"
+          ]
         }
       ]
     },
@@ -1142,8 +1543,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1399",
-          "quote": "有 他最好就是像欣興",
-          "timestampSec": 2537.765
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1398",
+            "Jxz5TPAtRtA-seg-1399",
+            "Jxz5TPAtRtA-seg-1400"
+          ],
+          "quote": "那有沒有可能拉起來 有 他最好就是像欣興 欣興最多就是1000塊",
+          "timestampSec": 2537.765,
+          "matchedTerms": [
+            "欣興"
+          ]
         }
       ]
     },
@@ -1156,8 +1565,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-1013",
-          "quote": "我們再來看到志聖",
-          "timestampSec": 1964.646
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-1012",
+            "1A7VYBGJn70-seg-1013",
+            "1A7VYBGJn70-seg-1014"
+          ],
+          "quote": "這是第一檔 我們再來看到志聖 好 志聖今天收552元",
+          "timestampSec": 1964.646,
+          "matchedTerms": [
+            "志聖"
+          ]
         }
       ]
     },
@@ -1170,8 +1587,16 @@
         {
           "videoId": "1O9eawPBHws",
           "segmentId": "1O9eawPBHws-seg-0482",
-          "quote": "啟碁、穩懋",
-          "timestampSec": 1004.97
+          "contextSegmentIds": [
+            "1O9eawPBHws-seg-0481",
+            "1O9eawPBHws-seg-0482",
+            "1O9eawPBHws-seg-0483"
+          ],
+          "quote": "例如地面站的 啟碁、穩懋 也值得留意追蹤",
+          "timestampSec": 1004.97,
+          "matchedTerms": [
+            "啟碁"
+          ]
         }
       ]
     },
@@ -1184,8 +1609,16 @@
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0632",
-          "quote": "這個也很飆 飆股的群創",
-          "timestampSec": 1240.806
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0631",
+            "3PVZxjgx3jo-seg-0632",
+            "3PVZxjgx3jo-seg-0633"
+          ],
+          "quote": "這個也很飆 這個也很飆 飆股的群創 群創是一個轉型股",
+          "timestampSec": 1240.806,
+          "matchedTerms": [
+            "群創"
+          ]
         }
       ]
     },
@@ -1198,8 +1631,16 @@
         {
           "videoId": "3PVZxjgx3jo",
           "segmentId": "3PVZxjgx3jo-seg-0850",
-          "quote": "當然這個股價最高的是華城",
-          "timestampSec": 1657.989
+          "contextSegmentIds": [
+            "3PVZxjgx3jo-seg-0849",
+            "3PVZxjgx3jo-seg-0850",
+            "3PVZxjgx3jo-seg-0851"
+          ],
+          "quote": "因為士電是重電股裡面 當然這個股價最高的是華城 但是士電實際上是",
+          "timestampSec": 1657.989,
+          "matchedTerms": [
+            "華城"
+          ]
         }
       ]
     },
@@ -1212,8 +1653,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-1020",
-          "quote": "所以第三檔的部分 我們看智邦",
-          "timestampSec": 1980.113
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-1019",
+            "1A7VYBGJn70-seg-1020",
+            "1A7VYBGJn70-seg-1021"
+          ],
+          "quote": "但是長線是不會有太大的疑慮 所以第三檔的部分 我們看智邦 股價來講是不是相對比較弱勢",
+          "timestampSec": 1980.113,
+          "matchedTerms": [
+            "智邦"
+          ]
         }
       ]
     },
@@ -1226,8 +1675,16 @@
         {
           "videoId": "Jxz5TPAtRtA",
           "segmentId": "Jxz5TPAtRtA-seg-1477",
-          "quote": "群聯也是 也算大漲 是",
-          "timestampSec": 2685.2
+          "contextSegmentIds": [
+            "Jxz5TPAtRtA-seg-1476",
+            "Jxz5TPAtRtA-seg-1477",
+            "Jxz5TPAtRtA-seg-1478"
+          ],
+          "quote": "南亞科漲停板 大賺56% 群聯也是 也算大漲 是 這些股票都有機會怎麼樣",
+          "timestampSec": 2685.2,
+          "matchedTerms": [
+            "群聯"
+          ]
         }
       ]
     },
@@ -1240,8 +1697,16 @@
         {
           "videoId": "1A7VYBGJn70",
           "segmentId": "1A7VYBGJn70-seg-1023",
-          "quote": "你看川湖就是強勢",
-          "timestampSec": 1986.613
+          "contextSegmentIds": [
+            "1A7VYBGJn70-seg-1022",
+            "1A7VYBGJn70-seg-1023",
+            "1A7VYBGJn70-seg-1024"
+          ],
+          "quote": "當然 這裡面也有強勢的 你看川湖就是強勢 還在創高的個股",
+          "timestampSec": 1986.613,
+          "matchedTerms": [
+            "川湖"
+          ]
         }
       ]
     }
@@ -1260,14 +1725,19 @@
         "detail": "6 份通過，3 份字幕不可得"
       },
       {
-        "name": "工作2確有輸出",
+        "name": "分析結果",
         "passed": true,
-        "detail": "33 檔個股、5 個跨影片主題"
+        "detail": "33 檔個股、4 個跨影片主題"
       },
       {
         "name": "分析可回查",
         "passed": true,
-        "detail": "每檔個股與共通主題均連回逐字稿 segment"
+        "detail": "每項證據均保留連續字幕上下文、錨點及命中詞"
+      },
+      {
+        "name": "主題去重與語意",
+        "passed": true,
+        "detail": "每支影片每個主題只計一次，且不以模糊的「被動」判定被動元件"
       },
       {
         "name": "失敗資料隔離",
