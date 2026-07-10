@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 
 const data = JSON.parse(readFileSync(new URL("../data/recommendations.json", import.meta.url), "utf8"));
+const history = JSON.parse(readFileSync(new URL("../data/technical-history.json", import.meta.url), "utf8"));
 const weights = data.weights;
 const maxima = {
   technical: weights.technical,
@@ -25,6 +26,7 @@ const decisionValid = stock => {
 };
 
 const checks = [
+  ["技術圖資料", data.candidates.every(stock => history.stocks[stock.code]?.length >= 60) && data.recommendations.every(stock => history.stocks[stock.code]?.length >= 60), "所有有效評分與推薦股均有至少60日日K可供下鑽"],
   ["全市場掃描", data.universeStats.scanned >= 800 && data.universeStats.scanned === data.universeStats.listedCompanies && data.universeStats.scanned === data.universeStats.validScores + data.universeStats.excluded, `${data.universeStats.scanned} 檔上市公司均有有效分數或排除原因`],
   ["全市場有效評分", data.universeStats.validScores >= 300, `${data.universeStats.validScores} 檔通過資料與流動性門檻`],
   ["推薦數量", data.recommendations.length === 3, "固定輸出 3 檔"],

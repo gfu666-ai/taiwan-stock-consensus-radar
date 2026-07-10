@@ -441,8 +441,9 @@ for (const stock of scored.filter(stock => stock.eligible)) {
 }
 if (recommendations.length !== 3) throw new Error(`Expected 3 recommendations, got ${recommendations.length}`);
 
+const generatedAt = new Date().toISOString();
 const output = {
-  generatedAt: new Date().toISOString(),
+  generatedAt,
   dataAsOf: latestDate,
   focusWindow: config.focusWindow,
   scope: "臺灣證券交易所全部上市公司普通股",
@@ -481,4 +482,18 @@ const output = {
 };
 
 writeFileSync(new URL("../data/recommendations.json", import.meta.url), `${JSON.stringify(output, null, 2)}\n`);
+const technicalHistory = {
+  generatedAt,
+  dataAsOf: latestDate,
+  tradingDays: tradingDates.length,
+  stocks: Object.fromEntries(scored.map(stock => [stock.code, (histories.get(stock.code) ?? []).slice(-config.universe.historyTradingDays).map(row => ({
+    date: row.date,
+    open: row.open,
+    high: row.high,
+    low: row.low,
+    close: row.close,
+    volume: row.volume
+  }))]))
+};
+writeFileSync(new URL("../data/technical-history.json", import.meta.url), `${JSON.stringify(technicalHistory)}\n`);
 console.log(`Built ${recommendations.length} recommendations as of ${latestDate}: ${recommendations.map(stock => `${stock.code} ${stock.name} ${stock.scores.total}`).join(", ")}`);

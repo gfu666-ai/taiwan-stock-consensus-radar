@@ -19,6 +19,7 @@ writeFileSync(new URL("app.js", output), app);
 cpSync(new URL("styles.css", source), new URL("styles.css", output));
 cpSync(new URL("../data/dashboard.json", import.meta.url), new URL("data/dashboard.json", output));
 cpSync(new URL("../data/recommendations.json", import.meta.url), new URL("data/recommendations.json", output));
+cpSync(new URL("../data/technical-history.json", import.meta.url), new URL("data/technical-history.json", output));
 writeFileSync(fileURLToPath(new URL(".nojekyll", output)), "");
 
 console.log("Built static site in docs/.");
