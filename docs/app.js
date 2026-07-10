@@ -19,14 +19,6 @@ try {
   throw error;
 }
 
-const videosById = new Map(data.videos.map(video => [video.id, video]));
-const formatTimestamp = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
-const videoUrlAt = (url, seconds) => {
-  const target = new URL(url);
-  target.searchParams.set("t", `${Math.floor(seconds)}s`);
-  return target.toString();
-};
-
 $("updated").textContent = data.generatedAt ? `更新 ${new Date(data.generatedAt).toLocaleString("zh-TW")}` : "尚未產生資料";
 $("summary").innerHTML = [
   [data.videos.length, "影片"],
@@ -250,21 +242,6 @@ analysisPanel.addEventListener("focusout", () => analysisPanel.querySelector(".c
 $("closeAnalysis").addEventListener("click", () => {
   $("stockAnalysisPanel").hidden = true;
 });
-
-const valid = data.validation.passed;
-$("validationBadge").className = `badge ${valid ? "pass" : "fail"}`;
-$("validationBadge").textContent = valid ? "驗證通過" : "驗證未通過";
-$("checks").innerHTML = data.validation.checks.map(check => `<article class="check ${check.passed ? "pass" : "fail"}"><strong>${check.passed ? "通過" : "未通過"} · ${esc(check.name)}</strong><small>${esc(check.detail)}</small></article>`).join("") || `<article class="check fail"><strong>尚無檢驗結果</strong></article>`;
-$("warnings").innerHTML = data.validation.warnings?.length ? `<div class="warnings">${data.validation.warnings.map(esc).join("<br>")}</div>` : "";
-
-$("themes").innerHTML = data.themes.map(theme => {
-  const evidence = theme.evidence.map(item => {
-    const video = videosById.get(item.videoId);
-    if (!video) return "";
-    return `<li><a href="${esc(videoUrlAt(video.url, item.timestampSec))}" target="_blank" rel="noopener noreferrer">${esc(video.channel)} · ${esc(formatTimestamp(item.timestampSec))}</a><span>${esc(item.matchedTerms?.join("、") || "關鍵字命中")}</span><p>${esc(item.quote)}</p></li>`;
-  }).join("");
-  return `<article class="theme"><span class="count">${theme.videoCount}</span><strong>${esc(theme.name)}</strong><p>${esc(theme.summary)}</p><small>判定條件：${esc(theme.criteria?.join(" + ") || "關鍵字命中")}</small><details><summary>查看 ${theme.videoCount} 支影片證據</summary><ul class="evidence-list">${evidence}</ul></details></article>`;
-}).join("") || `<p>尚無跨影片主題。</p>`;
 
 const maxMentions = Math.max(1, ...data.stocks.map(stock => stock.videoCount));
 $("stocks").innerHTML = data.stocks.map(stock => `<div class="stock-row"><span class="ticker">${esc(stock.ticker || "未確認")}</span><div><strong>${esc(stock.name)}</strong><div class="bar"><span style="width:${stock.videoCount / maxMentions * 100}%"></span></div><small>${stock.videoCount} 支影片提及 · ${stock.mentionCount} 次文字命中</small></div></div>`).join("") || `<p>尚無通過證據檢驗的個股。</p>`;
