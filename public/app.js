@@ -4,10 +4,16 @@ const esc = value => String(value ?? "").replace(/[&<>\"]/g, character => ({
 })[character]);
 
 let data;
+let recommendations;
 try {
-  const response = await fetch("/data/dashboard.json");
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  data = await response.json();
+  const [dashboardResponse, recommendationResponse] = await Promise.all([
+    fetch("/data/dashboard.json"),
+    fetch("/data/recommendations.json")
+  ]);
+  if (!dashboardResponse.ok || !recommendationResponse.ok) {
+    throw new Error(`HTTP ${dashboardResponse.status}/${recommendationResponse.status}`);
+  }
+  [data, recommendations] = await Promise.all([dashboardResponse.json(), recommendationResponse.json()]);
 } catch (error) {
   document.body.innerHTML = `<main class="load-error"><h1>資料載入失敗</h1><p>無法讀取 Dashboard 資料（${esc(error.message)}）。請重新整理，或確認 data/dashboard.json 已產生。</p></main>`;
   throw error;
@@ -27,8 +33,28 @@ $("summary").innerHTML = [
   [data.videos.length, "影片"],
   [data.videos.filter(video => video.transcript?.status === "verified").length, "有效逐字稿"],
   [data.themes.length, "共通主題"],
-  [data.stocks.length, "辨識個股"]
+  [data.stocks.length, "辨識個股"],
+  [recommendations.recommendations.length, "多因子推薦"]
 ].map(([number, label]) => `<div class="metric"><strong>${number}</strong><span>${label}</span></div>`).join("");
+
+const scoreLabels = {
+  technical: "技術", fundamental: "財務", institutional: "法人",
+  usIndustry: "美股連動", industryHeat: "產業熱度"
+};
+const formatNumber = value => Number(value ?? 0).toLocaleString("zh-TW", { maximumFractionDigits: 2 });
+const formatShares = value => `${formatNumber(value / 1000)} 張`;
+
+$("recommendationMeta").innerHTML = `資料日 <strong>${esc(recommendations.dataAsOf)}</strong> · 產業觀察 ${esc(recommendations.focusWindow.from)} 至 ${esc(recommendations.focusWindow.to)}<br><span>${esc(recommendations.disclaimer)}</span>`;
+$("recommendationCards").innerHTML = recommendations.recommendations.map(stock => {
+  const scoreRows = Object.entries(scoreLabels).map(([key, label]) => `<div><span>${label}</span><strong>${formatNumber(stock.scores[key])}<small> / ${recommendations.weights[key]}</small></strong></div>`).join("");
+  const risks = stock.riskFlags.length ? stock.riskFlags.map(risk => `<li>${esc(risk)}</li>`).join("") : "<li>模型未偵測到預設高風險旗標；仍須自行設定停損與部位上限。</li>";
+  return `<article class="recommendation-card"><div class="recommendation-rank">#${stock.rank}</div><p class="eyebrow">${esc(stock.focusName)}</p><div class="recommendation-title"><div><span>${esc(stock.code)}</span><h3>${esc(stock.name)}</h3></div><div class="total-score"><strong>${formatNumber(stock.scores.total)}</strong><span>/ 100</span></div></div><p class="latest-price">資料日收盤價 ${formatNumber(stock.latestPrice)} 元</p><div class="score-breakdown">${scoreRows}</div><h4>推薦依據</h4><ul>${stock.reasons.map(reason => `<li>${esc(reason)}</li>`).join("")}</ul><h4>風險與反證</h4><ul class="risk-list">${risks}</ul></article>`;
+}).join("");
+
+$("modelWeights").innerHTML = Object.entries(scoreLabels).map(([key, label]) => `<div class="weight-row"><span>${label}</span><div><i style="width:${recommendations.weights[key]}%"></i></div><strong>${recommendations.weights[key]}%</strong></div>`).join("");
+$("focusCards").innerHTML = recommendations.focuses.map(focus => `<article><p class="eyebrow">熱度 ${focus.heatScore} / 5</p><h3>${esc(focus.name)}</h3><p>${esc(focus.reason)}</p><small>美股代理：${esc(focus.usLeaders.join("、"))}</small><div>${focus.sources.map((source, index) => `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">產業來源 ${index + 1}</a>`).join(" · ")}</div></article>`).join("");
+
+$("candidateRanking").innerHTML = recommendations.candidates.slice(0, 12).map((stock, index) => `<tr><td>${index + 1}</td><td><strong>${esc(stock.code)} ${esc(stock.name)}</strong><small>${esc(stock.focusName)}</small></td><td>${formatNumber(stock.scores.total)}</td><td>${formatNumber(stock.scores.technical)}</td><td>${formatNumber(stock.scores.fundamental)}</td><td>${formatNumber(stock.scores.institutional)}</td><td>${formatNumber(stock.technical.return20d)}%</td><td>${formatShares(stock.institutional.total20)}</td></tr>`).join("");
 
 const valid = data.validation.passed;
 $("validationBadge").className = `badge ${valid ? "pass" : "fail"}`;

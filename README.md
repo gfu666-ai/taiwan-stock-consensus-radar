@@ -1,6 +1,6 @@
-# 台股市場共識雷達
+# 台股多因子推薦雷達
 
-蒐集台北時間 2026-06-07 至 2026-06-13 的台灣財經 YouTube 影片，擷取可用字幕，交叉整理共通主題與台股公司提及，並以 Dashboard 呈現證據。
+以臺灣證券交易所上市股票為範圍，整合近月熱門產業、技術分析、公開財務、三大法人及美股產業龍頭，產出 3 檔可回查的研究名單。原有的財經 YouTube 共識與逐字稿證據仍保留在 Dashboard 下半部。
 
 ## 執行
 
@@ -8,6 +8,7 @@
 npm.cmd install
 npm.cmd run transcripts
 npm.cmd run build:data
+npm.cmd run recommend
 npm.cmd run build:site
 npm.cmd run validate
 npm.cmd start
@@ -22,7 +23,23 @@ npm.cmd start
 - `data/sources.json`：影片 URL、頻道、日期與日期證據。
 - `data/transcripts.json`：完整逐字稿、segment、字數、SHA-256 與失敗原因。
 - `data/dashboard.json`：Dashboard 使用的個股、主題及原文證據。
+- `data/recommendation-config.json`：近月產業焦點、上市候選池、美股映射及模型權重。
+- `data/recommendations.json`：候選股分項評分、前三名、理由與風險旗標。
+- `scripts/build-recommendations.mjs`：抓取行情、財務、法人及美股資料並計算推薦分數。
+- `scripts/validate-recommendations.mjs`：檢查推薦數量、權重、資料完整性、產業分散與風險揭露。
 - `scripts/validate-data.mjs`：確認素材、日期、逐字稿、分析與證據都有實際產出。
+
+## 推薦模型
+
+- 技術面 35%：MA5/20/60、RSI14、MACD、KD、ATR14、量比、OBV、5/20/60 日報酬及 60 日回撤。
+- 財務面 30%：月營收年增、累計營收年增、毛利率、營益率、淨利率、流動比、負債比、本益比及股價淨值比。
+- 三大法人 20%：外資、投信、自營商近 20 日累計、近 5 日合計及買超天數。
+- 美國產業龍頭 10%：對應美股近 20 日報酬與均線趨勢。
+- 產業熱度 5%：近一個月有來源佐證的市場焦點。
+
+總分排序後，同一產業最多選入 2 檔；日 K 少於 60 日或財務資料不足者不得進入前三名。分數用於相對排序，不是目標價或上漲機率。
+
+台股當日行情、估值、月營收與財報來自臺灣證券交易所 OpenAPI；歷史行情與法人序列透過 FinMind 公開 API 取得；美股行情使用 Yahoo Finance chart API。每次執行都會在輸出中保留資料日期與來源。
 
 ## 分析規則
 
@@ -31,4 +48,4 @@ npm.cmd start
 - 跨影片主題至少需由 2 支不同影片支持；複合主題的必要訊號必須出現在相近字幕段落。
 - 每項證據保留命中詞、字幕錨點及連續上下文，可由時間連結回查原影片。
 
-逐字稿不可取得的影片會保留在素材清單，但不會參與股票或主題分析。個股提及不等於推薦，本工具不構成投資建議。
+逐字稿不可取得的影片會保留在素材清單，但不會參與股票或主題分析。本工具是研究與風險排序程式，不保證報酬，也不構成個人化投資建議。

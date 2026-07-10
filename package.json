@@ -7,8 +7,9 @@
     "start": "node server.mjs",
     "transcripts": "node scripts/fetch-transcripts.mjs",
     "build:data": "node scripts/build-dashboard.mjs",
+    "recommend": "node scripts/build-recommendations.mjs",
     "build:site": "node scripts/build-site.mjs",
-    "validate": "node scripts/validate-data.mjs"
+    "validate": "node scripts/validate-data.mjs && node scripts/validate-recommendations.mjs"
   },
   "dependencies": {
     "youtube-transcript": "^1.3.1"

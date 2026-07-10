@@ -12,12 +12,13 @@ const html = readFileSync(new URL("index.html", source), "utf8")
   .replace('href="/public/styles.css"', 'href="./styles.css"')
   .replace('src="/public/app.js"', 'src="./app.js"');
 const app = readFileSync(new URL("app.js", source), "utf8")
-  .replace('fetch("/data/dashboard.json")', 'fetch("./data/dashboard.json")');
+  .replaceAll('fetch("/data/', 'fetch("./data/');
 
 writeFileSync(new URL("index.html", output), html);
 writeFileSync(new URL("app.js", output), app);
 cpSync(new URL("styles.css", source), new URL("styles.css", output));
 cpSync(new URL("../data/dashboard.json", import.meta.url), new URL("data/dashboard.json", output));
+cpSync(new URL("../data/recommendations.json", import.meta.url), new URL("data/recommendations.json", output));
 writeFileSync(fileURLToPath(new URL(".nojekyll", output)), "");
 
 console.log("Built static site in docs/.");

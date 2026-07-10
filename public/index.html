@@ -3,21 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>台股情報雷達</title>
+  <title>台股多因子推薦雷達</title>
   <link rel="stylesheet" href="/public/styles.css">
 </head>
 <body>
   <header class="hero">
     <nav><span class="brand">TWSIGNAL</span><span id="updated" class="updated"></span></nav>
     <div class="hero-copy">
-      <p class="eyebrow">7 日影音交叉情報</p>
-      <h1>台股市場<br><span>共識雷達</span></h1>
-      <p class="intro">從近期台灣財經 YouTube 影片擷取逐字稿，追蹤共同主題與個股提及。每項結論都可回查原始影片及文字證據。</p>
+      <p class="eyebrow">產業 × 技術 × 財務 × 籌碼</p>
+      <h1>台股多因子<br><span>推薦雷達</span></h1>
+      <p class="intro">以臺灣證券交易所上市股票為範圍，整合近月熱門產業、技術指標、公開財務、三大法人與美股產業龍頭，產出可回查的三檔研究名單。</p>
     </div>
     <div id="summary" class="summary"></div>
   </header>
 
   <main>
+    <section class="section recommendation-section">
+      <div class="section-heading"><div><p class="eyebrow">TOP 3 RESEARCH LIST</p><h2>三檔推薦名單</h2></div><p id="recommendationMeta" class="recommendation-meta"></p></div>
+      <div id="recommendationCards" class="recommendation-grid"></div>
+    </section>
+
+    <section class="section model-section">
+      <div class="section-heading"><div><p class="eyebrow">SCORING MODEL</p><h2>100 分評估方式</h2></div><p class="fine-print">分數是相對排序，不是目標價或上漲機率。</p></div>
+      <div class="model-layout"><div id="modelWeights" class="model-weights"></div><div id="focusCards" class="focus-grid"></div></div>
+      <div class="ranking-wrap"><table><thead><tr><th>#</th><th>候選股</th><th>總分</th><th>技術</th><th>財務</th><th>法人</th><th>20日報酬</th><th>20日法人</th></tr></thead><tbody id="candidateRanking"></tbody></table></div>
+    </section>
+
     <section class="section validation-section">
       <div class="section-heading"><div><p class="eyebrow">DATA INTEGRITY</p><h2>資料驗證</h2></div><span id="validationBadge" class="badge"></span></div>
       <div id="checks" class="check-grid"></div>
@@ -25,7 +36,7 @@
     </section>
 
     <section class="section">
-      <div class="section-heading"><div><p class="eyebrow">MARKET CONSENSUS</p><h2>跨影片共通點</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">MARKET CONSENSUS</p><h2>影音共識參考</h2></div></div>
       <div id="themes" class="theme-grid"></div>
     </section>
 
