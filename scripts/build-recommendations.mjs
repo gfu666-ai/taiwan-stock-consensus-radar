@@ -2,8 +2,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const config = JSON.parse(readFileSync(new URL("../data/recommendation-config.json", import.meta.url), "utf8"));
 const focusById = new Map(config.focuses.map(focus => [focus.id, focus]));
+const overrideByCode = new Map(config.focusOverrides.map(item => [item.code, item]));
 const TWSE_OPEN = "https://openapi.twse.com.tw/v1";
-const FINMIND = "https://api.finmindtrade.com/api/v4/data";
+const TWSE_RWD = "https://www.twse.com.tw/rwd/zh";
 
 const round = (value, digits = 2) => Number.isFinite(value) ? Number(value.toFixed(digits)) : null;
 const number = value => {
@@ -24,7 +25,7 @@ async function fetchJson(url, attempts = 3) {
       return await response.json();
     } catch (error) {
       lastError = error;
-      if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, attempt * 500));
+      if (attempt < attempts) await new Promise(resolve => setTimeout(resolve, attempt * 1500));
     }
   }
   throw new Error(`Fetch failed: ${url}: ${lastError?.message}`);
@@ -37,18 +38,37 @@ function rocDateToIso(value) {
   return `${year}-${digits.slice(yearLength, yearLength + 2)}-${digits.slice(-2)}`;
 }
 
-async function fetchStockHistory(code, latestDate) {
-  const end = new Date(`${latestDate}T00:00:00Z`);
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 190);
-  const startDate = start.toISOString().slice(0, 10);
-  const url = `${FINMIND}?dataset=TaiwanStockPrice&data_id=${code}&start_date=${startDate}&end_date=${latestDate}`;
-  const payload = await fetchJson(url);
-  return (payload.data ?? []).map(row => ({
-    date: row.date,
-    volume: number(row.Trading_Volume),
-    open: number(row.open), high: number(row.max), low: number(row.min), close: number(row.close)
-  })).filter(row => row.close != null).sort((a, b) => a.date.localeCompare(b.date));
+async function fetchTradingDates(latestDate) {
+  const payload = await fetchJson("https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?range=6mo&interval=1d");
+  const result = payload.chart?.result?.[0];
+  if (!result) throw new Error("Trading calendar is unavailable");
+  return result.timestamp.map(timestamp => new Date(timestamp * 1000).toISOString().slice(0, 10))
+    .filter(date => date <= latestDate).slice(-config.universe.historyTradingDays);
+}
+
+function parseMarketDay(payload, date) {
+  const table = payload.tables?.find(item => item.fields?.includes("證券代號") && item.fields?.includes("收盤價"));
+  if (!table) return [];
+  return table.data.map(row => ({
+    code: String(row[0]).trim(), date,
+    volume: number(row[2]), tradingValue: number(row[4]),
+    open: number(row[5]), high: number(row[6]), low: number(row[7]), close: number(row[8])
+  })).filter(row => /^\d{4}$/.test(row.code) && row.close != null);
+}
+
+async function fetchAllMarketHistory(tradingDates) {
+  const histories = new Map();
+  for (let index = 0; index < tradingDates.length; index += 1) {
+    const date = tradingDates[index];
+    const payload = await fetchJson(`${TWSE_RWD}/afterTrading/MI_INDEX?date=${date.replaceAll("-", "")}&type=ALLBUT0999&response=json`);
+    for (const row of parseMarketDay(payload, date)) {
+      if (!histories.has(row.code)) histories.set(row.code, []);
+      histories.get(row.code).push(row);
+    }
+    if ((index + 1) % 10 === 0 || index === tradingDates.length - 1) console.log(`Fetched TWSE market days ${index + 1}/${tradingDates.length}`);
+    await new Promise(resolve => setTimeout(resolve, 250));
+  }
+  return histories;
 }
 
 function sma(values, period) {
@@ -101,6 +121,7 @@ function stochastic(rows, period = 14) {
 function technicalMetrics(rows) {
   const closes = rows.map(row => row.close);
   const volumes = rows.map(row => row.volume);
+  const tradingValues = rows.map(row => row.tradingValue);
   const close = closes.at(-1);
   const ma5 = sma(closes, 5);
   const ma20 = sma(closes, 20);
@@ -127,75 +148,107 @@ function technicalMetrics(rows) {
     return5d: returnAt(5), return20d: returnAt(20), return60d: returnAt(60),
     drawdown60d: high60 ? (close / high60 - 1) * 100 : null,
     obv20Change: obv.length > 20 ? obv.at(-1) - obv.at(-21) : null,
-    averageVolume20: sma(volumes, 20), historyDays: rows.length
+    averageVolume20: sma(volumes, 20), averageTradingValue20: sma(tradingValues, 20), historyDays: rows.length
   };
 }
 
 function scoreTechnical(metric) {
+  if (!metric.close || metric.historyDays < config.universe.minimumHistoryDays) return null;
   let score = 0;
   score += metric.close > metric.ma20 ? 4 : 0;
   score += metric.ma20 > metric.ma60 ? 4 : 0;
   score += metric.ma5 > metric.ma20 ? 4 : 0;
-  score += metric.rsi14 >= 50 && metric.rsi14 <= 70 ? 4 : metric.rsi14 >= 40 && metric.rsi14 <= 75 ? 2 : 0;
+  score += metric.rsi14 != null && metric.rsi14 >= 50 && metric.rsi14 <= 70 ? 4 : metric.rsi14 != null && metric.rsi14 >= 40 && metric.rsi14 <= 75 ? 2 : 0;
   score += metric.macdHistogram > 0 ? 2 : 0;
   score += metric.stochasticK > metric.stochasticD && metric.stochasticK < 85 ? 2 : 0;
   score += scale(metric.return20d, -10, 20) * 4;
   score += scale(metric.return60d, -15, 40) * 2;
   score += metric.volumeRatio5to20 > 1.1 && metric.return5d > 0 ? 4 : metric.volumeRatio5to20 > 0.9 ? 2 : 1;
-  score += metric.atrPct <= 3 ? 3 : metric.atrPct <= 5 ? 2 : metric.atrPct <= 8 ? 1 : 0;
-  score += metric.drawdown60d >= -10 ? 2 : metric.drawdown60d >= -20 ? 1 : 0;
+  score += metric.atrPct != null && metric.atrPct <= 3 ? 3 : metric.atrPct != null && metric.atrPct <= 5 ? 2 : metric.atrPct != null && metric.atrPct <= 8 ? 1 : 0;
+  score += metric.drawdown60d != null && metric.drawdown60d >= -10 ? 2 : metric.drawdown60d != null && metric.drawdown60d >= -20 ? 1 : 0;
   return round(score);
 }
 
-function financialMetrics(revenue, income, balance, valuation) {
-  const sales = number(income?.["營業收入"]);
-  const assets = number(balance?.["資產總額"]);
+function firstNumber(row, keys) {
+  for (const key of keys) {
+    const value = number(row?.[key]);
+    if (value != null) return value;
+  }
+  return null;
+}
+
+function financialMetrics(revenue, income, balance, valuation, industryCode) {
+  const isFinancial = industryCode === "17";
+  const sales = firstNumber(income, ["營業收入", "淨收益", "收益合計"]);
+  const assets = firstNumber(balance, ["資產總額", "資產總計"]);
+  const liabilities = firstNumber(balance, ["負債總額", "負債總計"]);
+  const equity = firstNumber(balance, ["權益總額", "權益總計"]);
+  const netIncome = firstNumber(income, ["本期淨利（淨損）", "本期稅後淨利（淨損）", "繼續營業單位本期淨利（淨損）"]);
   return {
+    isFinancial,
     revenueMonth: revenue?.["資料年月"] ?? null,
     revenueYoY: number(revenue?.["營業收入-去年同月增減(%)"]),
     revenueCumulativeYoY: number(revenue?.["累計營業收入-前期比較增減(%)"]),
     grossMargin: sales ? number(income?.["營業毛利（毛損）"]) / sales * 100 : null,
     operatingMargin: sales ? number(income?.["營業利益（損失）"]) / sales * 100 : null,
-    netMargin: sales ? number(income?.["本期淨利（淨損）"]) / sales * 100 : null,
+    netMargin: sales && netIncome != null ? netIncome / sales * 100 : null,
+    roa: assets && netIncome != null ? netIncome * 4 / assets * 100 : null,
+    roe: equity && netIncome != null ? netIncome * 4 / equity * 100 : null,
     eps: number(income?.["基本每股盈餘（元）"]),
     currentRatio: number(balance?.["流動負債"]) ? number(balance?.["流動資產"]) / number(balance?.["流動負債"]) : null,
-    debtRatio: assets ? number(balance?.["負債總額"]) / assets * 100 : null,
+    debtRatio: assets && liabilities != null ? liabilities / assets * 100 : null,
     pe: number(valuation?.PEratio), pb: number(valuation?.PBratio), dividendYield: number(valuation?.DividendYield),
     fiscalPeriod: income ? `${income["年度"]}Q${income["季別"]}` : null
   };
 }
 
 function scoreFundamental(metric) {
+  const growthComplete = metric.revenueYoY != null && metric.revenueCumulativeYoY != null;
+  if (!growthComplete) return null;
   let score = 0;
   score += scale(metric.revenueYoY, -10, 30) * 6;
   score += scale(metric.revenueCumulativeYoY, -5, 25) * 4;
-  score += scale(metric.grossMargin, 10, 55) * 3;
-  score += scale(metric.operatingMargin, 3, 30) * 4;
-  score += scale(metric.netMargin, 2, 25) * 3;
-  score += scale(metric.currentRatio, 0.8, 2) * 3;
-  score += scale(metric.debtRatio == null ? null : 75 - metric.debtRatio, 5, 45) * 2;
+  if (metric.isFinancial) {
+    if (metric.roe == null || metric.roa == null || metric.eps == null) return null;
+    score += scale(metric.roe, 3, 15) * 6;
+    score += scale(metric.roa, 0.3, 1.5) * 4;
+    score += scale(metric.eps, 0, 3) * 3;
+    score += scale(metric.dividendYield, 0, 5) * 2;
+  } else {
+    if (metric.grossMargin == null || metric.operatingMargin == null || metric.netMargin == null || metric.currentRatio == null || metric.debtRatio == null) return null;
+    score += scale(metric.grossMargin, 10, 55) * 3;
+    score += scale(metric.operatingMargin, 3, 30) * 4;
+    score += scale(metric.netMargin, 2, 25) * 3;
+    score += scale(metric.currentRatio, 0.8, 2) * 3;
+    score += scale(75 - metric.debtRatio, 5, 45) * 2;
+  }
   score += metric.pe > 0 && metric.pe <= 20 ? 3 : metric.pe <= 30 ? 2.5 : metric.pe <= 40 ? 1.5 : metric.pe <= 60 ? 0.5 : 0;
   score += metric.pb > 0 && metric.pb <= 3 ? 2 : metric.pb <= 6 ? 1.5 : metric.pb <= 10 ? 0.75 : 0.25;
   return round(score);
 }
 
-async function fetchInstitutionHistory(code, latestDate) {
-  const end = new Date(`${latestDate}T00:00:00Z`);
-  const start = new Date(end);
-  start.setUTCDate(start.getUTCDate() - 45);
-  const startDate = start.toISOString().slice(0, 10);
-  const url = `${FINMIND}?dataset=TaiwanStockInstitutionalInvestorsBuySellWide&data_id=${code}&start_date=${startDate}&end_date=${latestDate}`;
-  const payload = await fetchJson(url);
-  return (payload.data ?? []).map(row => {
-    const foreign = (number(row.Foreign_Investor_buy) ?? 0) - (number(row.Foreign_Investor_sell) ?? 0);
-    const trust = (number(row.Investment_Trust_buy) ?? 0) - (number(row.Investment_Trust_sell) ?? 0);
-    const dealer = ["Dealer", "Dealer_self", "Dealer_Hedging"].reduce((total, prefix) =>
-      total + (number(row[`${prefix}_buy`]) ?? 0) - (number(row[`${prefix}_sell`]) ?? 0), 0);
-    return { date: row.date, foreign, trust, dealer, total: foreign + trust + dealer };
-  }).sort((a, b) => a.date.localeCompare(b.date)).slice(-20);
+function parseInstitutionDay(payload) {
+  if (payload.stat !== "OK" || !Array.isArray(payload.data)) return new Map();
+  return new Map(payload.data.filter(row => /^\d{4}$/.test(String(row[0]).trim())).map(row => [String(row[0]).trim(), {
+    foreign: number(row[4]) ?? 0,
+    trust: number(row[10]) ?? 0,
+    dealer: number(row[11]) ?? 0,
+    total: number(row[18]) ?? 0
+  }]));
 }
 
-function institutionalMetrics(rows, averageVolume20) {
+async function fetchAllInstitutionDays(tradingDates) {
+  const days = [];
+  for (const date of tradingDates.slice(-20)) {
+    const payload = await fetchJson(`${TWSE_RWD}/fund/T86?date=${date.replaceAll("-", "")}&selectType=ALLBUT0999&response=json`);
+    days.push({ date, map: parseInstitutionDay(payload) });
+    await new Promise(resolve => setTimeout(resolve, 250));
+  }
+  return days;
+}
+
+function institutionalMetrics(code, dailyMaps, averageVolume20) {
+  const rows = dailyMaps.map(({ date, map }) => ({ date, ...(map.get(code) ?? { foreign: 0, trust: 0, dealer: 0, total: 0 }) }));
   const recent5 = rows.slice(-5);
   const volumeBase = averageVolume20 || 1;
   return {
@@ -250,9 +303,12 @@ function riskFlags(stock) {
 }
 
 function recommendationReasons(stock) {
+  const financialDetail = stock.fundamental.isFinancial
+    ? `月營收年增 ${round(stock.fundamental.revenueYoY)}%，年化 ROE ${round(stock.fundamental.roe)}%`
+    : `月營收年增 ${round(stock.fundamental.revenueYoY)}%，營益率 ${round(stock.fundamental.operatingMargin)}%`;
   const entries = [
     ["技術", stock.scores.technical, `${round(stock.technical.return20d)}% 月報酬，RSI ${round(stock.technical.rsi14)}`],
-    ["財務", stock.scores.fundamental, `月營收年增 ${round(stock.fundamental.revenueYoY)}%，營益率 ${round(stock.fundamental.operatingMargin)}%`],
+    ["財務", stock.scores.fundamental, financialDetail],
     ["法人", stock.institutional.total20 > 0 ? stock.scores.institutional : -1, `20 日合計買超 ${Math.round(stock.institutional.total20 / 1000).toLocaleString("en-US")} 張`],
     ["美股", stock.scores.usIndustry, `${stock.usIndustry.map(item => item.symbol).join("、")} 產業連動`]
   ].sort((a, b) => b[1] - a[1]);
@@ -276,39 +332,49 @@ function decisionFor(stock) {
   return { level: "avoid", label: rules.avoidLabel, reason: `總分低於觀察門檻 ${rules.watchMinScore} 分` };
 }
 
-const [market, valuationRows, revenueRows, incomeRows, balanceRows] = await Promise.all([
+const statementKinds = ["ci", "basi", "bd", "fh", "ins", "mim"];
+const [market, companyRows, valuationRows, revenueRows, incomeGroups, balanceGroups] = await Promise.all([
   fetchJson(`${TWSE_OPEN}/exchangeReport/STOCK_DAY_ALL`),
+  fetchJson(`${TWSE_OPEN}/opendata/t187ap03_L`),
   fetchJson(`${TWSE_OPEN}/exchangeReport/BWIBBU_ALL`),
   fetchJson(`${TWSE_OPEN}/opendata/t187ap05_L`),
-  fetchJson(`${TWSE_OPEN}/opendata/t187ap06_L_ci`),
-  fetchJson(`${TWSE_OPEN}/opendata/t187ap07_L_ci`)
+  Promise.all(statementKinds.map(kind => fetchJson(`${TWSE_OPEN}/opendata/t187ap06_L_${kind}`))),
+  Promise.all(statementKinds.map(kind => fetchJson(`${TWSE_OPEN}/opendata/t187ap07_L_${kind}`)))
 ]);
 
 const marketByCode = new Map(market.map(row => [row.Code, row]));
 const valuationByCode = new Map(valuationRows.map(row => [row.Code, row]));
 const revenueByCode = new Map(revenueRows.map(row => [row["公司代號"], row]));
+const incomeRows = incomeGroups.flat();
+const balanceRows = balanceGroups.flat();
 const incomeByCode = new Map(incomeRows.map(row => [row["公司代號"], row]));
 const balanceByCode = new Map(balanceRows.map(row => [row["公司代號"], row]));
 const latestRocDate = market.find(row => /^\d{4}$/.test(row.Code))?.Date;
 if (!latestRocDate) throw new Error("TWSE latest trading date is unavailable");
 const latestDate = rocDateToIso(latestRocDate);
 
-const histories = new Map();
-for (let index = 0; index < config.candidates.length; index += 4) {
-  const batch = config.candidates.slice(index, index + 4);
-  const results = await Promise.all(batch.map(async candidate => [candidate.code, await fetchStockHistory(candidate.code, latestDate)]));
-  results.forEach(([code, rows]) => histories.set(code, rows));
-  console.log(`Fetched TWSE history ${Math.min(index + 4, config.candidates.length)}/${config.candidates.length}`);
-}
+const universe = companyRows.filter(company => /^\d{4}$/.test(company["公司代號"])).map(company => {
+  const code = company["公司代號"];
+  const industryCode = company["產業別"];
+  const profile = config.industryProfiles[industryCode] ?? { name: `產業代碼 ${industryCode}`, usLeaders: ["SPY"] };
+  const override = overrideByCode.get(code);
+  const focusId = override?.focusId ?? profile.focusId ?? `industry-${industryCode}`;
+  return {
+    code,
+    name: company["公司簡稱"]?.trim() || marketByCode.get(code)?.Name?.trim() || code,
+    industryCode,
+    industryName: profile.name,
+    focusId,
+    focusName: focusById.get(focusId)?.name ?? profile.name,
+    usLeaders: override?.usLeaders ?? profile.usLeaders ?? ["SPY"]
+  };
+});
 
-const institutions = new Map();
-for (let index = 0; index < config.candidates.length; index += 4) {
-  const batch = config.candidates.slice(index, index + 4);
-  const results = await Promise.all(batch.map(async candidate => [candidate.code, await fetchInstitutionHistory(candidate.code, latestDate)]));
-  results.forEach(([code, rows]) => institutions.set(code, rows));
-}
+const tradingDates = await fetchTradingDates(latestDate);
+const histories = await fetchAllMarketHistory(tradingDates);
+const institutionalDays = await fetchAllInstitutionDays(tradingDates);
 
-const usSymbols = [...new Set(config.candidates.flatMap(candidate => candidate.usLeaders))];
+const usSymbols = [...new Set(universe.flatMap(candidate => candidate.usLeaders))];
 const usMetrics = new Map();
 for (let index = 0; index < usSymbols.length; index += 5) {
   const batch = usSymbols.slice(index, index + 5);
@@ -316,15 +382,15 @@ for (let index = 0; index < usSymbols.length; index += 5) {
   results.filter(Boolean).forEach(metric => usMetrics.set(metric.symbol, metric));
 }
 
-const scored = config.candidates.map(candidate => {
+const allStocks = universe.map(candidate => {
   const marketRow = marketByCode.get(candidate.code);
   const history = histories.get(candidate.code) ?? [];
   const technical = technicalMetrics(history);
   const fundamental = financialMetrics(
     revenueByCode.get(candidate.code), incomeByCode.get(candidate.code),
-    balanceByCode.get(candidate.code), valuationByCode.get(candidate.code)
+    balanceByCode.get(candidate.code), valuationByCode.get(candidate.code), candidate.industryCode
   );
-  const institutional = institutionalMetrics(institutions.get(candidate.code) ?? [], technical.averageVolume20);
+  const institutional = institutionalMetrics(candidate.code, institutionalDays, technical.averageVolume20);
   const usIndustry = candidate.usLeaders.map(symbol => usMetrics.get(symbol)).filter(Boolean);
   const scores = {
     technical: scoreTechnical(technical),
@@ -333,22 +399,37 @@ const scored = config.candidates.map(candidate => {
     usIndustry: round(average(usIndustry.map(metric => metric.score)) ?? 0),
     industryHeat: focusById.get(candidate.focusId)?.heatScore ?? 0
   };
-  const total = round(sum(Object.values(scores)));
+  const exclusionReasons = [];
+  const latestPrice = number(marketRow?.ClosingPrice);
+  if (latestPrice == null || latestPrice < config.universe.minimumPrice) exclusionReasons.push(`股價低於 ${config.universe.minimumPrice} 元或無成交價`);
+  if (technical.historyDays < config.universe.minimumHistoryDays) exclusionReasons.push(`日K不足 ${config.universe.minimumHistoryDays} 日`);
+  if (technical.averageTradingValue20 == null || technical.averageTradingValue20 < config.universe.minimumAverageTradingValue20) exclusionReasons.push("20日平均成交金額低於流動性門檻");
+  if (scores.fundamental == null) exclusionReasons.push("可比較財務資料不足");
+  if (institutional.days < config.universe.minimumInstitutionDays) exclusionReasons.push(`法人資料不足 ${config.universe.minimumInstitutionDays} 日`);
+  if (!usIndustry.length) exclusionReasons.push("美股產業代理資料不足");
+  const eligible = exclusionReasons.length === 0;
+  const total = eligible ? round(sum(Object.values(scores))) : null;
   const stock = {
     code: candidate.code,
-    name: marketRow?.Name?.trim() ?? candidate.code,
+    name: candidate.name,
+    industryCode: candidate.industryCode,
+    industryName: candidate.industryName,
     focusId: candidate.focusId,
-    focusName: focusById.get(candidate.focusId)?.name,
+    focusName: candidate.focusName,
     latestDate,
-    latestPrice: number(marketRow?.ClosingPrice),
-    scores: { ...scores, total }, technical, fundamental, institutional, usIndustry
+    latestPrice,
+    scores: { ...scores, total }, technical, fundamental, institutional, usIndustry,
+    eligible,
+    exclusionReasons
   };
   stock.riskFlags = riskFlags(stock);
-  stock.reasons = recommendationReasons(stock);
-  stock.decision = decisionFor(stock);
-  stock.eligible = technical.historyDays >= 60 && fundamental.revenueYoY != null && fundamental.operatingMargin != null;
+  stock.reasons = eligible ? recommendationReasons(stock) : [];
+  stock.decision = eligible ? decisionFor(stock) : { level: "excluded", label: "資料或流動性不足", reason: exclusionReasons.join("；") };
   return stock;
-}).sort((a, b) => b.scores.total - a.scores.total);
+});
+
+const scored = allStocks.filter(stock => stock.eligible).sort((a, b) => b.scores.total - a.scores.total);
+const excluded = allStocks.filter(stock => !stock.eligible).sort((a, b) => a.code.localeCompare(b.code));
 
 const recommendations = [];
 const focusCounts = new Map();
@@ -364,23 +445,37 @@ const output = {
   generatedAt: new Date().toISOString(),
   dataAsOf: latestDate,
   focusWindow: config.focusWindow,
-  scope: "臺灣證券交易所上市普通股候選池",
+  scope: "臺灣證券交易所全部上市公司普通股",
   disclaimer: "本模型為研究與風險排序工具，不保證報酬，也不構成個人化投資建議。",
   weights: config.weights,
   decisionRules: config.decisionRules,
   focuses: config.focuses,
+  universeStats: {
+    listedCompanies: companyRows.filter(company => /^\d{4}$/.test(company["公司代號"])).length,
+    scanned: universe.length,
+    validScores: scored.length,
+    excluded: excluded.length,
+    priceMinimum: config.universe.minimumPrice,
+    averageTradingValue20Minimum: config.universe.minimumAverageTradingValue20,
+    historyDays: tradingDates.length
+  },
   recommendations,
   candidates: scored,
+  excluded: excluded.map(stock => ({
+    code: stock.code, name: stock.name, industryName: stock.industryName,
+    latestPrice: stock.latestPrice, exclusionReasons: stock.exclusionReasons
+  })),
   methodology: {
     technical: ["MA5/20/60", "RSI14", "MACD", "KD", "ATR14", "5/20/60日報酬", "量比", "OBV", "60日回撤"],
     fundamental: ["月營收年增", "累計營收年增", "毛利率", "營益率", "淨利率", "流動比", "負債比", "本益比", "股價淨值比"],
     institutional: ["外資20日", "投信20日", "自營商20日", "三大法人5日", "法人買超天數"],
     usIndustry: "以對應美股產業龍頭20日報酬與均線趨勢作為景氣代理",
-    selection: "總分排序後，同一產業最多選入2檔；行情不足60日或財務欄位不足者不列入前三名。"
+    selection: "掃描全部上市公司普通股；股價、流動性、歷史行情、財務、法人或美股代理資料不足者保留排除原因，不列入有效排名。總分排序後同一產業最多選入2檔。"
   },
   sources: {
     twseMarket: "https://openapi.twse.com.tw/",
-    taiwanHistoryAndInstitutional: "https://api.finmindtrade.com/api/v4/data",
+    twseHistory: "https://www.twse.com.tw/rwd/zh/afterTrading/MI_INDEX",
+    twseInstitutional: "https://www.twse.com.tw/rwd/zh/fund/T86",
     usMarket: "https://query1.finance.yahoo.com/v8/finance/chart/"
   }
 };

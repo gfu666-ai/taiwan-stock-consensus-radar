@@ -44,7 +44,7 @@ const scoreLabels = {
 const formatNumber = value => Number(value ?? 0).toLocaleString("zh-TW", { maximumFractionDigits: 2 });
 const formatShares = value => `${formatNumber(value / 1000)} 張`;
 
-$("recommendationMeta").innerHTML = `資料日 <strong>${esc(recommendations.dataAsOf)}</strong> · 產業觀察 ${esc(recommendations.focusWindow.from)} 至 ${esc(recommendations.focusWindow.to)}<br><span>買進門檻：總分至少 ${formatNumber(recommendations.decisionRules.buyMinScore)} 分且無重大風險旗標。${esc(recommendations.disclaimer)}</span>`;
+$("recommendationMeta").innerHTML = `資料日 <strong>${esc(recommendations.dataAsOf)}</strong> · 全市場掃描 <strong>${formatNumber(recommendations.universeStats.scanned)}</strong> 檔 · 有效評分 <strong>${formatNumber(recommendations.universeStats.validScores)}</strong> 檔 · 排除 <strong>${formatNumber(recommendations.universeStats.excluded)}</strong> 檔<br><span>買進門檻：總分至少 ${formatNumber(recommendations.decisionRules.buyMinScore)} 分且無重大風險旗標。${esc(recommendations.disclaimer)}</span>`;
 $("recommendationCards").innerHTML = recommendations.recommendations.map(stock => {
   const scoreRows = Object.entries(scoreLabels).map(([key, label]) => `<div><span>${label}</span><strong>${formatNumber(stock.scores[key])}<small> / ${recommendations.weights[key]}</small></strong></div>`).join("");
   const risks = stock.riskFlags.length ? stock.riskFlags.map(risk => `<li>${esc(risk)}</li>`).join("") : "<li>模型未偵測到預設高風險旗標；仍須自行設定停損與部位上限。</li>";
