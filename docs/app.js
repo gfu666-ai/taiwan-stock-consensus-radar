@@ -210,7 +210,7 @@ async function openStockAnalysis(code) {
   $("analysisBody").innerHTML = `<p class="analysis-loading">正在載入日K資料…</p>`;
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
   try {
-    technicalHistoryPromise ??= fetch("./data/technical-history.json").then(response => {
+    technicalHistoryPromise ??= fetch("./data/technical-history.json", { cache: "no-store" }).then(response => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       return response.json();
     });
