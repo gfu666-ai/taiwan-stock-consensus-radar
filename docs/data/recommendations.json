@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-10T06:03:52.442Z",
+  "generatedAt": "2026-07-10T07:53:13.878Z",
   "dataAsOf": "2026-07-09",
   "focusWindow": {
     "from": "2026-06-10",
@@ -13,6 +13,21 @@
     "institutional": 20,
     "usIndustry": 10,
     "industryHeat": 5
+  },
+  "decisionRules": {
+    "buyMinScore": 75,
+    "watchMinScore": 65,
+    "buyLabel": "可考慮分批買進",
+    "watchLabel": "偏多觀察",
+    "avoidLabel": "暫不建議買進",
+    "blockedLabel": "分數達標，但等待風險解除",
+    "blockingRiskPatterns": [
+      "RSI 超過 75",
+      "不宜追價",
+      "本益比高於 60",
+      "最新月營收年減",
+      "三大法人合計賣超"
+    ]
   },
   "focuses": [
     {
@@ -163,6 +178,11 @@
         "財務 20.79 分：月營收年增 32.1%，營益率 18.29%",
         "法人 12.04 分：20 日合計買超 4,952 張"
       ],
+      "decision": {
+        "level": "watch",
+        "label": "偏多觀察",
+        "reason": "總分未達買進門檻 75 分"
+      },
       "eligible": true,
       "rank": 1
     },
@@ -262,6 +282,11 @@
         "技術 25.46 分：7.1% 月報酬，RSI 52.61",
         "美股 5.13 分：NVDA、TSM、AMAT 產業連動"
       ],
+      "decision": {
+        "level": "watch",
+        "label": "偏多觀察",
+        "reason": "總分未達買進門檻 75 分"
+      },
       "eligible": true,
       "rank": 2
     },
@@ -362,6 +387,11 @@
         "財務 13.76 分：月營收年增 28.57%，營益率 10.1%",
         "法人 8.97 分：20 日合計買超 4,386 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true,
       "rank": 3
     }
@@ -463,6 +493,11 @@
         "財務 20.79 分：月營收年增 32.1%，營益率 18.29%",
         "法人 12.04 分：20 日合計買超 4,952 張"
       ],
+      "decision": {
+        "level": "watch",
+        "label": "偏多觀察",
+        "reason": "總分未達買進門檻 75 分"
+      },
       "eligible": true
     },
     {
@@ -561,6 +596,11 @@
         "技術 25.46 分：7.1% 月報酬，RSI 52.61",
         "美股 5.13 分：NVDA、TSM、AMAT 產業連動"
       ],
+      "decision": {
+        "level": "watch",
+        "label": "偏多觀察",
+        "reason": "總分未達買進門檻 75 分"
+      },
       "eligible": true
     },
     {
@@ -660,6 +700,11 @@
         "財務 13.76 分：月營收年增 28.57%，營益率 10.1%",
         "法人 8.97 分：20 日合計買超 4,386 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -758,6 +803,11 @@
         "財務 14.79 分：月營收年增 66.8%，營益率 -4.02%",
         "法人 11.18 分：20 日合計買超 3,297 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -854,6 +904,11 @@
         "法人 12.41 分：20 日合計買超 1,484 張",
         "技術 12.37 分：-0.39% 月報酬，RSI 40.19"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -950,6 +1005,11 @@
         "財務 14.76 分：月營收年增 94.38%，營益率 2.85%",
         "法人 11.1 分：20 日合計買超 9,856 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1048,6 +1108,11 @@
         "財務 14.83 分：月營收年增 18.16%，營益率 6.31%",
         "美股 7.79 分：NVDA、DELL、ANET 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1148,6 +1213,11 @@
         "技術 18.49 分：8.46% 月報酬，RSI 48.56",
         "美股 3.96 分：ISRG、ROK、TER 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1244,6 +1314,11 @@
         "財務 16.69 分：月營收年增 56.58%，營益率 14.33%",
         "法人 9.38 分：20 日合計買超 159 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1343,6 +1418,11 @@
         "技術 13.85 分：1.69% 月報酬，RSI 46.61",
         "法人 10.17 分：20 日合計買超 800 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1441,6 +1521,11 @@
         "技術 10.89 分：-0.42% 月報酬，RSI 43.72",
         "法人 10.22 分：20 日合計買超 1,996 張"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1540,6 +1625,11 @@
         "法人 10.52 分：20 日合計買超 1,502 張",
         "美股 6.35 分：VRT、NVDA、AMD 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1640,6 +1730,11 @@
         "技術 13.18 分：6.36% 月報酬，RSI 49.04",
         "美股 5.16 分：AVGO、ANET、LITE 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1738,6 +1833,11 @@
         "法人 9.54 分：20 日合計買超 644 張",
         "美股 4.92 分：NVDA、AMAT、TER 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1837,6 +1937,11 @@
         "技術 10.11 分：-9.7% 月報酬，RSI 37.23",
         "美股 6.51 分：NVDA、DELL、VRT 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -1938,6 +2043,11 @@
         "技術 10.59 分：4.21% 月報酬，RSI 48.17",
         "美股 5.8 分：NVDA、AMD、TSM 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -2037,6 +2147,11 @@
         "美股 2.77 分：AVGO、LITE、COHR 產業連動",
         "技術 2 分：-21.69% 月報酬，RSI 35.12"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -2138,6 +2253,11 @@
         "技術 10.6 分：-5.54% 月報酬，RSI 44.68",
         "美股 5.81 分：NVDA、AMD、AVGO 產業連動"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     },
     {
@@ -2238,6 +2358,11 @@
         "美股 4.74 分：VRT、ETN、NVDA 產業連動",
         "技術 2.82 分：-14.55% 月報酬，RSI 39.59"
       ],
+      "decision": {
+        "level": "avoid",
+        "label": "暫不建議買進",
+        "reason": "總分低於觀察門檻 65 分"
+      },
       "eligible": true
     }
   ],

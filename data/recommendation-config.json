@@ -66,5 +66,20 @@
     "institutional": 20,
     "usIndustry": 10,
     "industryHeat": 5
+  },
+  "decisionRules": {
+    "buyMinScore": 75,
+    "watchMinScore": 65,
+    "buyLabel": "可考慮分批買進",
+    "watchLabel": "偏多觀察",
+    "avoidLabel": "暫不建議買進",
+    "blockedLabel": "分數達標，但等待風險解除",
+    "blockingRiskPatterns": [
+      "RSI 超過 75",
+      "不宜追價",
+      "本益比高於 60",
+      "最新月營收年減",
+      "三大法人合計賣超"
+    ]
   }
 }

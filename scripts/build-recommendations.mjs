@@ -259,6 +259,23 @@ function recommendationReasons(stock) {
   return entries.filter(([, score]) => score >= 0).slice(0, 3).map(([label, score, detail]) => `${label} ${score} 分：${detail}`);
 }
 
+function decisionFor(stock) {
+  const rules = config.decisionRules;
+  const blockingRisks = stock.riskFlags.filter(risk =>
+    rules.blockingRiskPatterns.some(pattern => risk.includes(pattern))
+  );
+  if (stock.scores.total >= rules.buyMinScore && blockingRisks.length === 0) {
+    return { level: "buy", label: rules.buyLabel, reason: `總分達 ${rules.buyMinScore} 分，且無重大風險旗標` };
+  }
+  if (stock.scores.total >= rules.buyMinScore) {
+    return { level: "blocked", label: rules.blockedLabel, reason: blockingRisks.join("；") };
+  }
+  if (stock.scores.total >= rules.watchMinScore) {
+    return { level: "watch", label: rules.watchLabel, reason: `總分未達買進門檻 ${rules.buyMinScore} 分` };
+  }
+  return { level: "avoid", label: rules.avoidLabel, reason: `總分低於觀察門檻 ${rules.watchMinScore} 分` };
+}
+
 const [market, valuationRows, revenueRows, incomeRows, balanceRows] = await Promise.all([
   fetchJson(`${TWSE_OPEN}/exchangeReport/STOCK_DAY_ALL`),
   fetchJson(`${TWSE_OPEN}/exchangeReport/BWIBBU_ALL`),
@@ -328,6 +345,7 @@ const scored = config.candidates.map(candidate => {
   };
   stock.riskFlags = riskFlags(stock);
   stock.reasons = recommendationReasons(stock);
+  stock.decision = decisionFor(stock);
   stock.eligible = technical.historyDays >= 60 && fundamental.revenueYoY != null && fundamental.operatingMargin != null;
   return stock;
 }).sort((a, b) => b.scores.total - a.scores.total);
@@ -349,6 +367,7 @@ const output = {
   scope: "臺灣證券交易所上市普通股候選池",
   disclaimer: "本模型為研究與風險排序工具，不保證報酬，也不構成個人化投資建議。",
   weights: config.weights,
+  decisionRules: config.decisionRules,
   focuses: config.focuses,
   recommendations,
   candidates: scored,
