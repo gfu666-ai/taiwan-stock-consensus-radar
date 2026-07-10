@@ -248,7 +248,7 @@ async function fetchAllInstitutionDays(tradingDates) {
 }
 
 function institutionalMetrics(code, dailyMaps, averageVolume20) {
-  const rows = dailyMaps.map(({ date, map }) => ({ date, ...(map.get(code) ?? { foreign: 0, trust: 0, dealer: 0, total: 0 }) }));
+  const rows = institutionalHistory(code, dailyMaps);
   const recent5 = rows.slice(-5);
   const volumeBase = averageVolume20 || 1;
   return {
@@ -264,6 +264,10 @@ function institutionalMetrics(code, dailyMaps, averageVolume20) {
     dealerToVolume: sum(rows.map(row => row.dealer)) / (volumeBase * Math.max(rows.length, 1)),
     total5ToVolume: sum(recent5.map(row => row.total)) / (volumeBase * Math.max(recent5.length, 1))
   };
+}
+
+function institutionalHistory(code, dailyMaps) {
+  return dailyMaps.map(({ date, map }) => ({ date, ...(map.get(code) ?? { foreign: 0, trust: 0, dealer: 0, total: 0 }) }));
 }
 
 function scoreInstitutional(metric) {
@@ -493,7 +497,8 @@ const technicalHistory = {
     low: row.low,
     close: row.close,
     volume: row.volume
-  }))]))
+  }))])),
+  institutional: Object.fromEntries(scored.map(stock => [stock.code, institutionalHistory(stock.code, institutionalDays)]))
 };
 writeFileSync(new URL("../data/technical-history.json", import.meta.url), `${JSON.stringify(technicalHistory)}\n`);
 console.log(`Built ${recommendations.length} recommendations as of ${latestDate}: ${recommendations.map(stock => `${stock.code} ${stock.name} ${stock.scores.total}`).join(", ")}`);

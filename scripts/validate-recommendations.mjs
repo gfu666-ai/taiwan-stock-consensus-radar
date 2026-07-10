@@ -27,6 +27,7 @@ const decisionValid = stock => {
 
 const checks = [
   ["技術圖資料", data.candidates.every(stock => history.stocks[stock.code]?.length >= 60) && data.recommendations.every(stock => history.stocks[stock.code]?.length >= 60), "所有有效評分與推薦股均有至少60日日K可供下鑽"],
+  ["法人趨勢圖資料", data.candidates.every(stock => history.institutional?.[stock.code]?.length >= 15 && history.institutional[stock.code].every(row => row.date && [row.foreign, row.trust].every(Number.isFinite))), "所有有效評分股票均有至少15日外資與投信買賣超"],
   ["全市場掃描", data.universeStats.scanned >= 800 && data.universeStats.scanned === data.universeStats.listedCompanies && data.universeStats.scanned === data.universeStats.validScores + data.universeStats.excluded, `${data.universeStats.scanned} 檔上市公司均有有效分數或排除原因`],
   ["全市場有效評分", data.universeStats.validScores >= 300, `${data.universeStats.validScores} 檔通過資料與流動性門檻`],
   ["推薦數量", data.recommendations.length === 3, "固定輸出 3 檔"],

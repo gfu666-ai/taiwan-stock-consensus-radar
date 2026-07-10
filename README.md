@@ -25,7 +25,7 @@ npm.cmd start
 - `data/dashboard.json`：Dashboard 使用的個股、主題及原文證據。
 - `data/recommendation-config.json`：近月產業焦點、上市候選池、美股映射及模型權重。
 - `data/recommendations.json`：候選股分項評分、前三名、理由與風險旗標。
-- `data/technical-history.json`：有效評分股票最近 80 個交易日 OHLCV，供點擊後繪製互動式技術圖。
+- `data/technical-history.json`：有效評分股票最近 80 個交易日 OHLCV，以及最近 20 日外資、投信與自營商買賣超，供點擊後繪製互動圖表。
 - `scripts/build-recommendations.mjs`：抓取行情、財務、法人及美股資料並計算推薦分數。
 - `scripts/validate-recommendations.mjs`：檢查推薦數量、權重、資料完整性、產業分散與風險揭露。
 - `scripts/validate-data.mjs`：確認素材、日期、逐字稿、分析與證據都有實際產出。

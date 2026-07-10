@@ -81,6 +81,36 @@ function scoreChart(stock) {
   })), { maximum: 100, valueFormatter: value => formatNumber(value) });
 }
 
+function institutionalFlowChart(rows, key, label, color) {
+  const width = 760;
+  const height = 280;
+  const left = 56;
+  const right = 24;
+  const top = 22;
+  const bottom = 244;
+  const values = rows.map(row => (Number(row[key]) || 0) / 1000);
+  let running = 0;
+  const cumulative = values.map(value => running += value);
+  const dailyLimit = Math.max(1, ...values.map(Math.abs)) * 1.12;
+  const cumulativeLimit = Math.max(1, ...cumulative.map(Math.abs)) * 1.12;
+  const x = index => left + index * (width - left - right) / Math.max(rows.length - 1, 1);
+  const dailyY = value => (top + bottom) / 2 - value / dailyLimit * (bottom - top) / 2;
+  const cumulativeY = value => (top + bottom) / 2 - value / cumulativeLimit * (bottom - top) / 2;
+  const zeroY = dailyY(0);
+  const barWidth = Math.max(5, Math.min(20, (width - left - right) / Math.max(rows.length, 1) * 0.58));
+  const bars = rows.map((row, index) => {
+    const value = values[index];
+    const barY = Math.min(zeroY, dailyY(value));
+    const barHeight = Math.max(1.5, Math.abs(dailyY(value) - zeroY));
+    const tip = `${row.date}｜${label} ${value >= 0 ? "買超" : "賣超"} ${formatNumber(Math.abs(value))} 張｜20 日累計至當日 ${formatNumber(cumulative[index])} 張`;
+    return `<rect class="chart-mark" tabindex="0" role="graphics-symbol" aria-label="${esc(tip)}" data-tip="${esc(tip)}" x="${x(index) - barWidth / 2}" y="${barY}" width="${barWidth}" height="${barHeight}" fill="${value >= 0 ? color : "#e8513d"}" opacity=".72"/>`;
+  }).join("");
+  const linePoints = cumulative.map((value, index) => `${x(index)},${cumulativeY(value)}`).join(" ");
+  const dateIndexes = [0, Math.floor((rows.length - 1) / 2), rows.length - 1];
+  const labels = dateIndexes.map(index => `<text x="${x(index)}" y="270" text-anchor="middle">${esc(rows[index].date.slice(5))}</text>`).join("");
+  return `<svg class="analysis-svg interactive-chart flow-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`${label}最近${rows.length}日每日與累計買賣超`)}"><line x1="${left}" y1="${zeroY}" x2="${width - right}" y2="${zeroY}" stroke="#b9b6ae"/><text x="${left}" y="14" fill="${color}">柱：每日買賣超</text><text x="${left + 110}" y="14" fill="#2878c8">線：累計買賣超</text>${bars}<polyline points="${linePoints}" fill="none" stroke="#2878c8" stroke-width="2.5"/>${cumulative.map((value, index) => `<circle class="chart-mark" tabindex="0" data-tip="${esc(`${rows[index].date}｜${label}累計 ${formatNumber(value)} 張`)}" cx="${x(index)}" cy="${cumulativeY(value)}" r="2.8" fill="#2878c8"/>`).join("")}${labels}</svg>`;
+}
+
 function technicalChart(rows, visibleCount = 40, overlays = new Set(["ma5", "ma20"])) {
   visibleCount = Math.min(visibleCount, rows.length);
   const startIndex = rows.length - visibleCount;
@@ -119,7 +149,7 @@ function technicalChart(rows, visibleCount = 40, overlays = new Set(["ma5", "ma2
   return `<svg class="technical-svg interactive-chart" viewBox="0 0 900 375" role="img" aria-label="近${visibleCount}日K線、均線與成交量"><line x1="${left}" y1="${priceBottom}" x2="${width - right}" y2="${priceBottom}" stroke="#d2d0c9"/><line x1="${left}" y1="${volumeBottom}" x2="${width - right}" y2="${volumeBottom}" stroke="#d2d0c9"/><text x="${left - 8}" y="${y(high) + 5}" text-anchor="end">${formatNumber(high)}</text><text x="${left - 8}" y="${y(low) + 5}" text-anchor="end">${formatNumber(low)}</text>${candles}${lines}${dateLabels}<g class="chart-legend"><text x="${left}" y="14" fill="#f39c12">MA5</text><text x="${left + 48}" y="14" fill="#2878c8">MA20</text><text x="${left + 104}" y="14" fill="#8f5cc2">MA60</text><text x="${left + 164}" y="14" fill="#667078">紅漲／綠跌</text><text x="${left}" y="272" fill="#667078">成交量</text></g></svg>`;
 }
 
-function renderAnalysis(stock, rows) {
+function renderAnalysis(stock, rows, institutionalRows = []) {
   const weekAverageVolume = rows.slice(-5).reduce((total, row) => total + row.volume, 0) / Math.min(rows.length, 5);
   const rangeButtons = [20, 40, 60, 80].filter(days => days <= rows.length).map(days => `<button type="button" data-chart-range="${days}" class="${activeAnalysis.range === days ? "active" : ""}">${days} 日</button>`).join("");
   const overlayButtons = [["ma5", "MA5"], ["ma20", "MA20"], ["ma60", "MA60"]].map(([key, label]) => `<button type="button" data-ma-toggle="${key}" class="${activeAnalysis.overlays.has(key) ? "active" : ""}" aria-pressed="${activeAnalysis.overlays.has(key)}">${label}</button>`).join("");
@@ -146,6 +176,8 @@ function renderAnalysis(stock, rows) {
     { label: "三大法人 5 日", value: stock.institutional.total5 / 1000, suffix: " 張", color: "#2878c8" }
   ];
   const institutionalLimit = Math.max(1, ...institutional.map(item => Math.abs(item.value))) * 1.12;
+  const foreign5 = institutionalRows.slice(-5).reduce((total, row) => total + (row.foreign || 0), 0);
+  const trust5 = institutionalRows.slice(-5).reduce((total, row) => total + (row.trust || 0), 0);
   const usLeaders = stock.usIndustry.map(item => ({ label: item.symbol, value: item.return20d, suffix: "%", color: item.return20d >= 0 ? "#2878c8" : "#e8513d", detail: `${item.symbol}：20 日報酬 ${formatNumber(item.return20d)}%，連動分數 ${formatNumber(item.score)} / 10` }));
   const usLimit = Math.max(5, ...usLeaders.map(item => Math.abs(item.value))) * 1.12;
   $("analysisBody").innerHTML = `<div class="analysis-summary"><div><span>總分</span><strong>${formatNumber(stock.scores.total)} / 100</strong><small>${esc(stock.decision.label)}</small></div><div><span>最近收盤</span><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></div><div><span>最近一週平均成交量</span><strong>${formatShares(weekAverageVolume)}／日</strong><small>${formatNumber(weekAverageVolume)} 股／日</small></div><div><span>產業焦點</span><strong>${formatNumber(stock.scores.industryHeat)} / 5</strong><small>${esc(stock.focusName)}</small></div></div>
@@ -164,6 +196,8 @@ function renderAnalysis(stock, rows) {
     ].map(([label, value, unit, max]) => `<div class="mini-gauge chart-mark" tabindex="0" data-tip="${esc(`${label}：${formatNumber(value)} ${unit}`)}"><span>${esc(label)}</span><div><i style="--gauge:${Math.max(0, Math.min(100, Number(value || 0) / max * 100))}%"></i></div><strong>${formatNumber(value)} ${unit}</strong></div>`).join("")}</div>`, "wide-chart")}
     ${chartPanel("三大法人買賣超", `近 20 日買超 ${stock.institutional.positiveDays} 日；正值買超、負值賣超`, horizontalBarChart(institutional, { minimum: -institutionalLimit, maximum: institutionalLimit }), "")}
     ${chartPanel("美國產業龍頭連動", "比較對應美股近 20 日報酬，滑過可查看連動分數", horizontalBarChart(usLeaders, { minimum: -usLimit, maximum: usLimit }), "")}
+    ${institutionalRows.length ? chartPanel("外資買賣超趨勢", `最近 5 日合計 ${formatShares(foreign5)}；柱狀為每日、藍線為 20 日累計`, institutionalFlowChart(institutionalRows, "foreign", "外資", "#16794d"), "") : ""}
+    ${institutionalRows.length ? chartPanel("投信買賣超趨勢", `最近 5 日合計 ${formatShares(trust5)}；柱狀為每日、藍線為 20 日累計`, institutionalFlowChart(institutionalRows, "trust", "投信", "#8f5cc2"), "") : ""}
   </div><div class="chart-tooltip" role="status" aria-live="polite"></div><p class="chart-note">所有圖表均使用本次全市場評分資料動態產生；最近一週以最近 5 個交易日計算。圖表供研究比較，不代表未來報酬。</p>`;
 }
 
@@ -182,9 +216,10 @@ async function openStockAnalysis(code) {
     });
     const history = await technicalHistoryPromise;
     const rows = history.stocks[code];
+    const institutionalRows = history.institutional?.[code] ?? [];
     if (!rows?.length) throw new Error("此股票沒有足夠的技術資料");
-    activeAnalysis = { code, stock, rows, range: 40, overlays: new Set(["ma5", "ma20"]) };
-    renderAnalysis(stock, rows);
+    activeAnalysis = { code, stock, rows, institutionalRows, range: 40, overlays: new Set(["ma5", "ma20"]) };
+    renderAnalysis(stock, rows, institutionalRows);
   } catch (error) {
     $("analysisBody").innerHTML = `<p class="analysis-error">技術資料載入失敗：${esc(error.message)}</p>`;
   }
@@ -212,14 +247,14 @@ document.addEventListener("click", event => {
   const range = event.target.closest?.("[data-chart-range]");
   if (range && activeAnalysis) {
     activeAnalysis.range = Number(range.dataset.chartRange);
-    renderAnalysis(activeAnalysis.stock, activeAnalysis.rows);
+    renderAnalysis(activeAnalysis.stock, activeAnalysis.rows, activeAnalysis.institutionalRows);
     return;
   }
   const overlay = event.target.closest?.("[data-ma-toggle]");
   if (overlay && activeAnalysis) {
     const key = overlay.dataset.maToggle;
     activeAnalysis.overlays.has(key) ? activeAnalysis.overlays.delete(key) : activeAnalysis.overlays.add(key);
-    renderAnalysis(activeAnalysis.stock, activeAnalysis.rows);
+    renderAnalysis(activeAnalysis.stock, activeAnalysis.rows, activeAnalysis.institutionalRows);
   }
 });
 
