@@ -240,6 +240,7 @@ async function fetchUsMetric(symbol) {
 function riskFlags(stock) {
   const flags = [];
   if (stock.technical.rsi14 > 75) flags.push("RSI 超過 75，短線過熱");
+  if (stock.technical.return60d > 45) flags.push("近 60 日漲幅超過 45%，不宜追價");
   if (stock.technical.drawdown60d < -20) flags.push("距 60 日高點回落超過 20%");
   if (stock.fundamental.pe > 60) flags.push("本益比高於 60 倍");
   if (stock.fundamental.revenueYoY < 0) flags.push("最新月營收年減");
