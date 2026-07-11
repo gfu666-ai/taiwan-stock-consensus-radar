@@ -41,6 +41,7 @@
   ],
   "universe": {
     "minimumPrice": 10,
+    "minimumAverageVolume5": 1000000,
     "minimumAverageTradingValue20": 50000000,
     "minimumHistoryDays": 60,
     "minimumInstitutionDays": 15,
@@ -63,7 +64,7 @@
     "16": { "name": "觀光餐旅", "usLeaders": ["BKNG", "MAR"] },
     "17": { "name": "金融保險", "usLeaders": ["JPM", "BAC"] },
     "18": { "name": "貿易百貨", "usLeaders": ["WMT", "COST"] },
-    "20": { "name": "其他", "usLeaders": ["SPY"] },
+    "20": { "name": "其他", "usLeaders": ["SPY", "IWM"] },
     "21": { "name": "化學工業", "usLeaders": ["LIN", "DOW"] },
     "22": { "name": "生技醫療", "usLeaders": ["LLY", "XLV"] },
     "23": { "name": "油電燃氣", "usLeaders": ["XLE", "XLU"] },

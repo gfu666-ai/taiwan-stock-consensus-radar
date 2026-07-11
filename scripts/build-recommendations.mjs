@@ -148,7 +148,7 @@ function technicalMetrics(rows) {
     return5d: returnAt(5), return20d: returnAt(20), return60d: returnAt(60),
     drawdown60d: high60 ? (close / high60 - 1) * 100 : null,
     obv20Change: obv.length > 20 ? obv.at(-1) - obv.at(-21) : null,
-    averageVolume20: sma(volumes, 20), averageTradingValue20: sma(tradingValues, 20), historyDays: rows.length
+    averageVolume5: sma(volumes, 5), averageVolume20: sma(volumes, 20), averageTradingValue20: sma(tradingValues, 20), historyDays: rows.length
   };
 }
 
@@ -407,6 +407,7 @@ const allStocks = universe.map(candidate => {
   const latestPrice = number(marketRow?.ClosingPrice);
   if (latestPrice == null || latestPrice < config.universe.minimumPrice) exclusionReasons.push(`股價低於 ${config.universe.minimumPrice} 元或無成交價`);
   if (technical.historyDays < config.universe.minimumHistoryDays) exclusionReasons.push(`日K不足 ${config.universe.minimumHistoryDays} 日`);
+  if (technical.averageVolume5 == null || technical.averageVolume5 < config.universe.minimumAverageVolume5) exclusionReasons.push(`最近5個交易日平均成交量低於 ${Math.round(config.universe.minimumAverageVolume5 / 1000).toLocaleString("en-US")} 張`);
   if (technical.averageTradingValue20 == null || technical.averageTradingValue20 < config.universe.minimumAverageTradingValue20) exclusionReasons.push("20日平均成交金額低於流動性門檻");
   if (scores.fundamental == null) exclusionReasons.push("可比較財務資料不足");
   if (institutional.days < config.universe.minimumInstitutionDays) exclusionReasons.push(`法人資料不足 ${config.universe.minimumInstitutionDays} 日`);
@@ -461,6 +462,7 @@ const output = {
     validScores: scored.length,
     excluded: excluded.length,
     priceMinimum: config.universe.minimumPrice,
+    averageVolume5Minimum: config.universe.minimumAverageVolume5,
     averageTradingValue20Minimum: config.universe.minimumAverageTradingValue20,
     historyDays: tradingDates.length
   },
@@ -475,7 +477,7 @@ const output = {
     fundamental: ["月營收年增", "累計營收年增", "毛利率", "營益率", "淨利率", "流動比", "負債比", "本益比", "股價淨值比"],
     institutional: ["外資20日", "投信20日", "自營商20日", "三大法人5日", "法人買超天數"],
     usIndustry: "以對應美股產業龍頭20日報酬與均線趨勢作為景氣代理",
-    selection: "掃描全部上市公司普通股；股價、流動性、歷史行情、財務、法人或美股代理資料不足者保留排除原因，不列入有效排名。總分排序後同一產業最多選入2檔。"
+    selection: "掃描全部上市公司普通股；最近5個交易日平均成交量至少1,000張，且股價、成交金額、歷史行情、財務、法人與美股代理資料均須通過門檻，否則保留排除原因，不列入有效排名。總分排序後同一產業最多選入2檔。"
   },
   sources: {
     twseMarket: "https://openapi.twse.com.tw/",
