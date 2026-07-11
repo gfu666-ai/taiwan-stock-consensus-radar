@@ -160,6 +160,44 @@ function technicalMomentumChart(rows, key, label, color) {
   return `<svg class="analysis-svg interactive-chart momentum-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${esc(`${label}最近20日每日柱狀與5日均線`)}"><line x1="${left}" y1="${y(80)}" x2="${width - right}" y2="${y(80)}" stroke="#e8513d55" stroke-dasharray="4 4"/><line x1="${left}" y1="${y(20)}" x2="${width - right}" y2="${y(20)}" stroke="#16794d55" stroke-dasharray="4 4"/><text x="${left}" y="14" fill="${color}">柱：每日 ${esc(label)}</text><text x="${left + 105}" y="14" fill="#2878c8">線：5 日均線</text>${bars}<polyline points="${linePoints}" fill="none" stroke="#2878c8" stroke-width="2.5"/>${dateLabels}</svg>`;
 }
 
+function emaValues(values, period) {
+  if (!values.length) return [];
+  const multiplier = 2 / (period + 1);
+  return values.reduce((series, value, index) => {
+    series.push(index === 0 ? value : value * multiplier + series[index - 1] * (1 - multiplier));
+    return series;
+  }, []);
+}
+
+function macdChart(rows) {
+  const closes = rows.map(row => row.close);
+  const ema12 = emaValues(closes, 12);
+  const ema26 = emaValues(closes, 26);
+  const dif = ema12.map((value, index) => value - ema26[index]);
+  const signal = emaValues(dif, 9);
+  const points = rows.map((row, index) => ({ date: row.date, dif: dif[index], signal: signal[index], histogram: dif[index] - signal[index] })).slice(-20);
+  const width = 760;
+  const height = 280;
+  const left = 50;
+  const right = 24;
+  const top = 28;
+  const bottom = 244;
+  const limit = Math.max(0.01, ...points.flatMap(point => [Math.abs(point.dif), Math.abs(point.signal), Math.abs(point.histogram)])) * 1.12;
+  const x = index => left + index * (width - left - right) / Math.max(points.length - 1, 1);
+  const y = value => (top + bottom) / 2 - value / limit * (bottom - top) / 2;
+  const zeroY = y(0);
+  const barWidth = Math.max(5, Math.min(20, (width - left - right) / Math.max(points.length, 1) * .58));
+  const bars = points.map((point, index) => {
+    const barY = Math.min(zeroY, y(point.histogram));
+    const tip = `${point.date}｜MACD柱 ${formatNumber(point.histogram)}｜DIF ${formatNumber(point.dif)}｜Signal ${formatNumber(point.signal)}`;
+    return `<rect class="chart-mark" tabindex="0" role="graphics-symbol" aria-label="${esc(tip)}" data-tip="${esc(tip)}" x="${x(index) - barWidth / 2}" y="${barY}" width="${barWidth}" height="${Math.max(1.5, Math.abs(y(point.histogram) - zeroY))}" fill="${point.histogram >= 0 ? "#e8513d" : "#16794d"}" opacity=".72"/>`;
+  }).join("");
+  const line = (key, color) => `<polyline points="${points.map((point, index) => `${x(index)},${y(point[key])}`).join(" ")}" fill="none" stroke="${color}" stroke-width="2.5"/>`;
+  const dateIndexes = [0, Math.floor((points.length - 1) / 2), points.length - 1];
+  const dateLabels = dateIndexes.map(index => `<text x="${x(index)}" y="270" text-anchor="middle">${esc(points[index].date.slice(5))}</text>`).join("");
+  return `<svg class="analysis-svg interactive-chart macd-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="MACD最近20日柱狀、DIF與Signal線"><line x1="${left}" y1="${zeroY}" x2="${width - right}" y2="${zeroY}" stroke="#b9b6ae"/><text x="${left}" y="14" fill="#667078">柱：MACD</text><text x="${left + 75}" y="14" fill="#e28b16">線：DIF</text><text x="${left + 130}" y="14" fill="#2878c8">線：Signal</text>${bars}${line("dif", "#e28b16")}${line("signal", "#2878c8")}${dateLabels}</svg>`;
+}
+
 function technicalChart(rows, visibleCount = 40, overlays = new Set(["ma5", "ma20"])) {
   visibleCount = Math.min(visibleCount, rows.length);
   const startIndex = rows.length - visibleCount;
@@ -202,7 +240,7 @@ function renderAnalysis(stock, rows, institutionalRows = []) {
   const weekAverageVolume = rows.slice(-5).reduce((total, row) => total + row.volume, 0) / Math.min(rows.length, 5);
   const rangeButtons = [20, 40, 60, 80].filter(days => days <= rows.length).map(days => `<button type="button" data-chart-range="${days}" class="${activeAnalysis.range === days ? "active" : ""}">${days} 日</button>`).join("");
   const overlayButtons = [["ma5", "MA5"], ["ma20", "MA20"], ["ma60", "MA60"]].map(([key, label]) => `<button type="button" data-ma-toggle="${key}" class="${activeAnalysis.overlays.has(key) ? "active" : ""}" aria-pressed="${activeAnalysis.overlays.has(key)}">${label}</button>`).join("");
-  const momentumOptions = { rsi14: ["RSI14", "#e28b16"], stochasticK: ["KD-K", "#2878c8"], stochasticD: ["KD-D", "#8f5cc2"] };
+  const momentumOptions = { rsi14: ["RSI14", "#e28b16"], stochasticK: ["KD-K", "#2878c8"], stochasticD: ["KD-D", "#8f5cc2"], macd: ["MACD", "#667078"] };
   const momentumButtons = Object.entries(momentumOptions).map(([key, [label]]) => `<button type="button" data-momentum-key="${key}" class="${activeAnalysis.momentumKey === key ? "active" : ""}">${label}</button>`).join("");
   const flowOptions = { total: ["三大法人", "#2878c8"], foreign: ["外資", "#16794d"], trust: ["投信", "#8f5cc2"], dealer: ["自營商", "#e28b16"] };
   const flowButtons = Object.entries(flowOptions).map(([key, [label]]) => `<button type="button" data-flow-key="${key}" class="${activeAnalysis.flowKey === key ? "active" : ""}">${label}</button>`).join("");
@@ -231,7 +269,7 @@ function renderAnalysis(stock, rows, institutionalRows = []) {
     ${chartPanel("五大因子評分", "滑過長條可查看得分、滿分與達成率", scoreChart(stock), "wide-chart")}
     <section class="analysis-chart-card wide-chart"><div class="chart-card-heading"><div><h4>價格、均線與成交量</h4><p>滑過 K 棒查看每日 OHLCV；可切換期間與均線</p></div><div class="chart-controls"><span>${rangeButtons}</span><span>${overlayButtons}</span></div></div><div class="technical-chart">${technicalChart(rows, activeAnalysis.range, activeAnalysis.overlays)}</div></section>
     ${chartPanel("區間報酬與風險", "正值為上漲，負值為下跌或回撤", horizontalBarChart(returns, { minimum: -returnLimit, maximum: returnLimit }), "")}
-    <section class="analysis-chart-card"><div class="chart-card-heading"><div><h4>技術動能</h4><p>最近 20 日每日柱狀與 5 日均線，可切換 RSI／KD</p></div><div class="chart-controls"><span>${momentumButtons}</span></div></div>${technicalMomentumChart(rows, activeAnalysis.momentumKey, ...momentumOptions[activeAnalysis.momentumKey])}</section>
+    <section class="analysis-chart-card"><div class="chart-card-heading"><div><h4>技術動能</h4><p>最近 20 日技術指標，可切換 RSI／KD／MACD</p></div><div class="chart-controls"><span>${momentumButtons}</span></div></div>${activeAnalysis.momentumKey === "macd" ? macdChart(rows) : technicalMomentumChart(rows, activeAnalysis.momentumKey, ...momentumOptions[activeAnalysis.momentumKey])}</section>
     ${chartPanel("財務成長與獲利", `財報期 ${stock.fundamental.fiscalPeriod || "未提供"}；各指標單位為百分比`, horizontalBarChart(fundamentalGrowth, { minimum: -fundamentalLimit, maximum: fundamentalLimit }), "wide-chart")}
     ${chartPanel("估值與財務安全", "數值尺度不同，採各指標獨立刻度顯示", `<div class="gauge-grid">${[
       ["EPS", stock.fundamental.eps, "元", 20], ["本益比", stock.fundamental.pe, "倍", 60], ["股價淨值比", stock.fundamental.pb, "倍", 10], ["殖利率", stock.fundamental.dividendYield, "%", 10], ["流動比", stock.fundamental.currentRatio, "倍", 5], ["負債比", stock.fundamental.debtRatio, "%", 100]
