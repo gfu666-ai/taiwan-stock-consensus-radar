@@ -11,7 +11,8 @@ mkdirSync(new URL("data/", output), { recursive: true });
 
 const app = readFileSync(new URL("app.js", source), "utf8")
   .replaceAll('fetch("/data/', 'fetch("./data/');
-const assetVersion = createHash("sha256").update(app).digest("hex").slice(0, 12);
+const styles = readFileSync(new URL("styles.css", source), "utf8");
+const assetVersion = createHash("sha256").update(app).update(styles).digest("hex").slice(0, 12);
 const html = readFileSync(new URL("index.html", source), "utf8")
   .replace('href="/public/styles.css"', `href="./styles.css?v=${assetVersion}"`)
   .replace('src="/public/app.js"', `src="./app.js?v=${assetVersion}"`);
