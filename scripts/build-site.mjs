@@ -1,4 +1,5 @@
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 const source = new URL("../public/", import.meta.url);
@@ -8,11 +9,12 @@ rmSync(output, { recursive: true, force: true });
 mkdirSync(output, { recursive: true });
 mkdirSync(new URL("data/", output), { recursive: true });
 
-const html = readFileSync(new URL("index.html", source), "utf8")
-  .replace('href="/public/styles.css"', 'href="./styles.css"')
-  .replace('src="/public/app.js"', 'src="./app.js"');
 const app = readFileSync(new URL("app.js", source), "utf8")
   .replaceAll('fetch("/data/', 'fetch("./data/');
+const assetVersion = createHash("sha256").update(app).digest("hex").slice(0, 12);
+const html = readFileSync(new URL("index.html", source), "utf8")
+  .replace('href="/public/styles.css"', `href="./styles.css?v=${assetVersion}"`)
+  .replace('src="/public/app.js"', `src="./app.js?v=${assetVersion}"`);
 
 writeFileSync(new URL("index.html", output), html);
 writeFileSync(new URL("app.js", output), app);
