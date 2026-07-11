@@ -24,6 +24,15 @@ const decisionValid = stock => {
   if (stock.decision.level === "watch") return stock.scores.total >= rules.watchMinScore && stock.scores.total < rules.buyMinScore;
   return stock.decision.level === "avoid" && stock.scores.total < rules.watchMinScore;
 };
+const entryPlanValid = stock => {
+  const plan = stock.entryPlan;
+  return plan && [plan.zoneLow, plan.zoneHigh, plan.breakoutPrice, plan.invalidationPrice].every(Number.isFinite)
+    && plan.invalidationPrice < plan.zoneLow
+    && plan.zoneLow <= plan.zoneHigh
+    && plan.zoneHigh <= plan.breakoutPrice
+    && typeof plan.status === "string"
+    && typeof plan.rationale === "string";
+};
 
 const checks = [
   ["技術圖資料", data.candidates.every(stock => history.stocks[stock.code]?.length >= 60) && data.recommendations.every(stock => history.stocks[stock.code]?.length >= 60), "所有有效評分與推薦股均有至少60日日K可供下鑽"],
@@ -36,6 +45,7 @@ const checks = [
   ["推薦去重", new Set(data.recommendations.map(stock => stock.code)).size === 3, "三檔股票不重複"],
   ["權重合計", Object.values(weights).reduce((total, value) => total + value, 0) === 100, "技術、財務、法人、美股與產業合計 100%"],
   ["買進門檻", data.decisionRules.buyMinScore > data.decisionRules.watchMinScore && data.candidates.every(decisionValid), `總分 ${data.decisionRules.buyMinScore} 分以上且無重大風險才顯示買進`],
+  ["模型進場計畫", data.candidates.every(entryPlanValid), "所有有效評分股票均有合理排序的進場區間、突破價與失效價"],
   ["分數邊界", data.candidates.every(stock => componentsValid(stock) && totalMatches(stock)), "分項未超過權重且總分可重算"],
   ["資料完整", data.recommendations.every(stock => stock.eligible && stock.technical.historyDays >= 60 && stock.institutional.days >= 15), "推薦股具至少 60 日日K與 15 日法人資料"],
   ["財務資料", data.recommendations.every(stock => stock.fundamental.revenueYoY != null && (stock.fundamental.isFinancial ? stock.fundamental.roe != null : stock.fundamental.operatingMargin != null) && stock.fundamental.debtRatio != null), "推薦股具營收、獲利與資產負債資料"],

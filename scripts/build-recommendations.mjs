@@ -132,6 +132,9 @@ function technicalMetrics(rows) {
   const signal = emaSeries(macd, 9);
   const stoch = stochastic(rows);
   const atrValue = atr(rows);
+  const recent20 = rows.slice(-20);
+  const low20 = recent20.length ? Math.min(...recent20.map(row => row.low)) : null;
+  const high20 = recent20.length ? Math.max(...recent20.map(row => row.high)) : null;
   const high60 = rows.length ? Math.max(...rows.slice(-60).map(row => row.high)) : null;
   const returnAt = days => closes.length > days ? (close / closes.at(-days - 1) - 1) * 100 : null;
   const obv = rows.slice(1).reduce((values, row, index) => {
@@ -143,6 +146,7 @@ function technicalMetrics(rows) {
     close, ma5, ma20, ma60, rsi14: rsi(closes),
     macdHistogram: macd.length ? macd.at(-1) - signal.at(-1) : null,
     stochasticK: stoch.k, stochasticD: stoch.d,
+    atr14: atrValue, low20, high20,
     atrPct: atrValue && close ? atrValue / close * 100 : null,
     volumeRatio5to20: sma(volumes, 5) && sma(volumes, 20) ? sma(volumes, 5) / sma(volumes, 20) : null,
     return5d: returnAt(5), return20d: returnAt(20), return60d: returnAt(60),
@@ -336,6 +340,34 @@ function decisionFor(stock) {
   return { level: "avoid", label: rules.avoidLabel, reason: `總分低於觀察門檻 ${rules.watchMinScore} 分` };
 }
 
+function entryPlanFor(stock) {
+  const { close, ma20, ma60, atr14, high20 } = stock.technical;
+  if (![close, ma20, ma60, atr14, high20].every(Number.isFinite) || atr14 <= 0) return null;
+
+  const trendSupport = Math.max(ma20, ma60);
+  const lowerSupport = Math.min(ma20, ma60);
+  const zoneLow = Math.max(lowerSupport, trendSupport - atr14 * 0.75);
+  const zoneHigh = Math.max(zoneLow, trendSupport + atr14 * 0.25);
+  const breakoutPrice = Math.max(zoneHigh, high20 + atr14 * 0.25);
+  const invalidationPrice = Math.max(0.01, Math.min(lowerSupport, zoneLow) - atr14 * 1.5);
+  const overheated = stock.technical.rsi14 > 75 || stock.riskFlags.some(risk => risk.includes("不宜追價"));
+
+  let status = "等待回測";
+  if (!overheated && close >= zoneLow && close <= zoneHigh) status = "接近分批區";
+  else if (!overheated && close < zoneLow) status = "等待站回支撐";
+  else if (close > zoneHigh) status = "等待拉回";
+
+  return {
+    method: "MA20／MA60 趨勢支撐 + ATR14 波動 + 20日高點突破",
+    zoneLow: round(zoneLow),
+    zoneHigh: round(zoneHigh),
+    breakoutPrice: round(breakoutPrice),
+    invalidationPrice: round(invalidationPrice),
+    status,
+    rationale: `優先等待 ${round(zoneLow)}–${round(zoneHigh)} 元量縮止穩；若未回測，須放量突破 ${round(breakoutPrice)} 元再評估。跌破 ${round(invalidationPrice)} 元視為模型失效。`
+  };
+}
+
 const statementKinds = ["ci", "basi", "bd", "fh", "ins", "mim"];
 const [market, companyRows, valuationRows, revenueRows, incomeGroups, balanceGroups] = await Promise.all([
   fetchJson(`${TWSE_OPEN}/exchangeReport/STOCK_DAY_ALL`),
@@ -428,6 +460,7 @@ const allStocks = universe.map(candidate => {
     exclusionReasons
   };
   stock.riskFlags = riskFlags(stock);
+  stock.entryPlan = eligible ? entryPlanFor(stock) : null;
   stock.reasons = eligible ? recommendationReasons(stock) : [];
   stock.decision = eligible ? decisionFor(stock) : { level: "excluded", label: "資料或流動性不足", reason: exclusionReasons.join("；") };
   return stock;
@@ -476,6 +509,7 @@ const output = {
     technical: ["MA5/20/60", "RSI14", "MACD", "KD", "ATR14", "5/20/60日報酬", "量比", "OBV", "60日回撤"],
     fundamental: ["月營收年增", "累計營收年增", "毛利率", "營益率", "淨利率", "流動比", "負債比", "本益比", "股價淨值比"],
     institutional: ["外資20日", "投信20日", "自營商20日", "三大法人5日", "法人買超天數"],
+    entryPlan: "以MA20／MA60趨勢支撐、ATR14波動及20日高點計算模型進場區間、突破追蹤價與失效價",
     usIndustry: "以對應美股產業龍頭20日報酬與均線趨勢作為景氣代理",
     selection: "掃描全部上市公司普通股；最近5個交易日平均成交量至少1,000張，且股價、成交金額、歷史行情、財務、法人與美股代理資料均須通過門檻，否則保留排除原因，不列入有效排名。總分排序後同一產業最多選入2檔。"
   },
