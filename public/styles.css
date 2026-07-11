@@ -105,7 +105,7 @@ th,td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--line)
 th { position:sticky; top:0; z-index:1; background:var(--ink); color:white; font-size:11px; letter-spacing:.04em; }
 tbody tr { transition:background .15s ease; }
 tbody tr:hover { background:#eef6e4; }
-th:nth-child(4),td:nth-child(4) { text-align:left; }
+.candidate-table th:nth-child(4),.candidate-table td:nth-child(4),.capital-table th:nth-child(2),.capital-table td:nth-child(2) { text-align:left; }
 td small { display:block; color:var(--muted); margin-top:3px; }
 .movement { display:inline-block; min-width:42px; font-weight:800; white-space:nowrap; }
 .movement-up,.score-change.positive { color:var(--green); }
@@ -127,6 +127,20 @@ td small { display:block; color:var(--muted); margin-top:3px; }
 .dropped-list article strong { color:var(--ink); font-size:15px; }
 .dropped-rank { color:var(--red); font-weight:800; }
 .dropped-list p { margin:0; color:var(--muted); line-height:1.45; font-size:12px; }
+.capital-section { padding-top:4px; scroll-margin-top:76px; }
+.capital-legend { display:flex; flex-wrap:wrap; gap:10px 18px; margin-top:16px; padding:12px 14px; border:1px solid var(--line); background:white; color:var(--muted); font-size:11px; }
+.capital-legend span { display:flex; align-items:center; gap:6px; }
+.capital-legend i { width:9px; height:9px; border-radius:50%; }
+.capital-legend .capital-high { background:var(--green); }.capital-legend .capital-flow { background:#2878c8; }.capital-legend .capital-neutral { background:#c58b00; }.capital-legend .capital-out { background:var(--red); }
+.capital-table { min-width:1080px; }
+.capital-score { display:flex; align-items:center; justify-content:flex-end; gap:8px; }
+.capital-score>strong { min-width:38px; }
+.capital-score>span { display:block; width:54px; height:6px; background:#e3e1da; }
+.capital-score i { display:block; height:100%; background:var(--green); }
+.capital-signal { display:inline-block; padding:5px 7px; border:1px solid currentColor; white-space:nowrap; font-size:11px; font-weight:800; }
+.capital-high { color:var(--green); }.capital-flow { color:#2878c8; }.capital-neutral { color:#946200; }.capital-out { color:var(--red); }
+.capital-table td.positive { color:var(--green); font-weight:800; }.capital-table td.negative { color:var(--red); font-weight:800; }
+.capital-warning { color:var(--red); font-size:11px; font-weight:800; }.capital-clear { color:var(--muted); font-size:11px; }
 .stock-analysis-panel { position:relative; margin-top:24px; padding:24px; background:white; border:1px solid var(--line); border-top:5px solid var(--green); border-radius:5px; box-shadow:0 22px 55px #1018201c; scroll-margin-top:76px; }
 .stock-analysis-panel[hidden] { display:none; }
 .analysis-header { position:sticky; top:64px; z-index:10; display:flex; justify-content:space-between; align-items:start; gap:18px; margin:-24px -24px 18px; padding:20px 24px 14px; background:#fffffff2; border-bottom:1px solid var(--line); backdrop-filter:blur(10px); }

@@ -5,7 +5,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台股多因子推薦雷達</title>
-  <link rel="stylesheet" href="./styles.css?v=d8c71e805cd4">
+  <link rel="stylesheet" href="./styles.css?v=6c6aab53fee6">
 </head>
 <body>
   <a class="skip-link" href="#recommendations">跳到推薦名單</a>
@@ -15,6 +15,7 @@
       <a href="#recommendations">推薦</a>
       <a href="#methodology">評分</a>
       <a href="#candidates">候選</a>
+      <a href="#capital">資金</a>
       <a href="#mentions">聲量</a>
     </div>
     <span id="updated" class="updated"></span>
@@ -41,8 +42,9 @@
       <div id="candidates" class="subsection-heading"><div><p class="eyebrow">CANDIDATE RANKING</p><h3>候選股前 12 名</h3></div><p>點選股票名稱可開啟完整動態分析</p></div>
       <div id="rankingChanges" class="ranking-changes" aria-live="polite"></div>
       <div class="table-swipe-hint" aria-hidden="true">表格可左右滑動查看更多欄位 →</div>
-      <div class="ranking-wrap" role="region" aria-label="候選股排名表，可左右捲動" tabindex="0"><table><thead><tr><th>本期</th><th>上期</th><th>升降</th><th>候選股</th><th>最近收盤價</th><th>總分</th><th>分數變化</th><th>買進判定</th><th>技術</th><th>財務</th><th>法人</th><th>20日報酬</th><th>20日法人</th></tr></thead><tbody id="candidateRanking"></tbody></table></div>
+      <div class="ranking-wrap" role="region" aria-label="候選股排名表，可左右捲動" tabindex="0"><table class="candidate-table"><thead><tr><th>本期</th><th>上期</th><th>升降</th><th>候選股</th><th>最近收盤價</th><th>總分</th><th>分數變化</th><th>買進判定</th><th>技術</th><th>財務</th><th>法人</th><th>20日報酬</th><th>20日法人</th></tr></thead><tbody id="candidateRanking"></tbody></table></div>
       <section id="droppedCandidates" class="dropped-candidates" hidden><div class="dropped-heading"><div><p class="eyebrow">RANKING CHANGES</p><h3>本期跌出前 12 名</h3></div><p>區分排名下滑與未通過資格門檻</p></div><div id="droppedList" class="dropped-list"></div></section>
+      <section id="capital" class="capital-section"><div class="subsection-heading"><div><p class="eyebrow">CAPITAL CONCENTRATION</p><h3>近期資金集中排行</h3></div><p>公開市場價量與法人籌碼訊號，不代表特定主力持股</p></div><div class="capital-legend"><span><i class="capital-high"></i>75–100 高度集中</span><span><i class="capital-flow"></i>60–74.99 持續流入</span><span><i class="capital-neutral"></i>45–59.99 中性</span><span><i class="capital-out"></i>低於45 分散或流出</span></div><div class="table-swipe-hint" aria-hidden="true">表格可左右滑動查看更多欄位 →</div><div class="ranking-wrap" role="region" aria-label="近期資金集中排行，可左右捲動" tabindex="0"><table class="capital-table"><thead><tr><th>#</th><th>股票</th><th>最近股價</th><th>集中分數</th><th>訊號</th><th>主要法人</th><th>連續流入</th><th>5日法人</th><th>5/20日量比</th><th>成交金額比</th><th>風險警示</th></tr></thead><tbody id="capitalRanking"></tbody></table></div></section>
       <section id="stockAnalysisPanel" class="stock-analysis-panel" hidden aria-live="polite" tabindex="-1">
         <div class="analysis-header"><div><p class="eyebrow">INTERACTIVE MULTI-FACTOR ANALYSIS</p><h3 id="analysisTitle">多因子圖表分析</h3></div><button id="closeAnalysis" type="button" aria-label="關閉多因子圖表分析">關閉</button></div>
         <div id="analysisBody"></div>
@@ -58,6 +60,6 @@
 
   <button id="backToTop" class="back-to-top" type="button" aria-label="回到頁首" hidden>↑</button>
   <footer>本頁為公開影音內容的整理與研究工具，不構成投資建議。</footer>
-  <script type="module" src="./app.js?v=d8c71e805cd4"></script>
+  <script type="module" src="./app.js?v=6c6aab53fee6"></script>
 </body>
 </html>

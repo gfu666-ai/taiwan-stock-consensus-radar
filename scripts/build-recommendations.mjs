@@ -290,6 +290,65 @@ function scoreInstitutional(metric) {
   return round(score);
 }
 
+function capitalConcentrationFor(stock, history, institutionalRows) {
+  const recent5 = history.slice(-5);
+  const recent20 = history.slice(-20);
+  const averageTradingValue5 = average(recent5.map(row => row.tradingValue));
+  const averageTradingValue20 = average(recent20.map(row => row.tradingValue));
+  const tradingValueRatio = averageTradingValue20 ? averageTradingValue5 / averageTradingValue20 : 0;
+  const upVolume = sum(recent20.filter(row => row.close >= row.open).map(row => row.volume));
+  const downVolume = sum(recent20.filter(row => row.close < row.open).map(row => row.volume));
+  const upDownVolumeRatio = downVolume ? upVolume / downVolume : upVolume > 0 ? 2 : 0;
+  const recentInstitutional5 = institutionalRows.slice(-5);
+  const flows5 = {
+    foreign: sum(recentInstitutional5.map(row => row.foreign)),
+    trust: sum(recentInstitutional5.map(row => row.trust)),
+    dealer: sum(recentInstitutional5.map(row => row.dealer))
+  };
+  const sourceLabels = { foreign: "外資", trust: "投信", dealer: "自營商" };
+  const dominantKey = Object.keys(flows5).sort((a, b) => flows5[b] - flows5[a])[0];
+  const dominantFlow5 = flows5[dominantKey];
+  let consecutiveInflowDays = 0;
+  for (const row of [...institutionalRows].reverse()) {
+    if (row.total <= 0) break;
+    consecutiveInflowDays += 1;
+  }
+
+  const volumeScore = scale(stock.technical.volumeRatio5to20, 0.8, 2) * 15
+    + scale(tradingValueRatio, 0.8, 2) * 15;
+  const institutionalScore = scale(stock.institutional.positiveDays / Math.max(stock.institutional.days, 1), 0.35, 0.75) * 10
+    + scale(stock.institutional.total5ToVolume, -0.05, 0.25) * 12
+    + scale(dominantFlow5 / Math.max(stock.technical.averageVolume5 * 5, 1), 0, 0.15) * 8;
+  const obvRatio = stock.technical.obv20Change / Math.max(stock.technical.averageVolume20 * 20, 1);
+  const priceVolumeScore = scale(obvRatio, -0.2, 0.5) * 10
+    + scale(upDownVolumeRatio, 0.8, 1.6) * 7
+    + (stock.technical.return5d > 0 && stock.technical.volumeRatio5to20 > 1 ? 8 : stock.technical.return5d > 0 ? 4 : 0);
+  const trendScore = (stock.technical.close > stock.technical.ma20 ? 5 : 0)
+    + (stock.technical.ma20 > stock.technical.ma60 ? 5 : 0)
+    + scale(stock.technical.return20d, -5, 15) * 5;
+  const score = round(volumeScore + institutionalScore + priceVolumeScore + trendScore);
+  const latestVolume = history.at(-1)?.volume ?? 0;
+  const volumeFade = stock.technical.volumeRatio5to20 > 1.35 && latestVolume < stock.technical.averageVolume5 * 0.55;
+  const label = score >= 75 ? "資金高度集中" : score >= 60 ? "資金持續流入" : score >= 45 ? "資金中性" : "資金分散或流出";
+
+  return {
+    score, label,
+    components: {
+      volume: round(volumeScore), institutional: round(institutionalScore),
+      priceVolume: round(priceVolumeScore), trend: round(trendScore)
+    },
+    volumeRatio5to20: round(stock.technical.volumeRatio5to20),
+    tradingValueRatio5to20: round(tradingValueRatio),
+    upDownVolumeRatio: round(upDownVolumeRatio),
+    obv20Ratio: round(obvRatio),
+    institutionalTotal5: stock.institutional.total5,
+    dominantSource: dominantFlow5 > 0 ? sourceLabels[dominantKey] : "無明顯法人",
+    dominantFlow5,
+    consecutiveInflowDays,
+    warning: volumeFade ? "近期量能集中但最新一日明顯退潮" : null
+  };
+}
+
 async function fetchUsMetric(symbol) {
   const payload = await fetchJson(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=6mo&interval=1d`);
   const result = payload.chart?.result?.[0];
@@ -467,6 +526,7 @@ const allStocks = universe.map(candidate => {
   };
   stock.riskFlags = riskFlags(stock);
   stock.entryPlan = eligible ? entryPlanFor(stock) : null;
+  stock.capitalConcentration = eligible ? capitalConcentrationFor(stock, history, institutionalHistory(candidate.code, institutionalDays)) : null;
   stock.reasons = eligible ? recommendationReasons(stock) : [];
   stock.decision = eligible ? decisionFor(stock) : { level: "excluded", label: "資料或流動性不足", reason: exclusionReasons.join("；") };
   return stock;
@@ -474,6 +534,10 @@ const allStocks = universe.map(candidate => {
 
 const scored = allStocks.filter(stock => stock.eligible).sort((a, b) => b.scores.total - a.scores.total);
 const excluded = allStocks.filter(stock => !stock.eligible).sort((a, b) => a.code.localeCompare(b.code));
+const capitalConcentrationRanking = [...scored]
+  .sort((a, b) => b.capitalConcentration.score - a.capitalConcentration.score || b.scores.total - a.scores.total)
+  .slice(0, 20)
+  .map((stock, index) => ({ ...stock, capitalRank: index + 1 }));
 const previousCandidates = new Map((previousOutput?.candidates ?? []).map((stock, index) => [stock.code, {
   rank: stock.currentRank ?? index + 1,
   score: stock.scores?.total ?? null
@@ -551,6 +615,7 @@ const output = {
   },
   recommendations,
   candidates: scored,
+  capitalConcentrationRanking,
   excluded: excluded.map(stock => ({
     code: stock.code, name: stock.name, industryName: stock.industryName,
     latestPrice: stock.latestPrice,
@@ -563,6 +628,7 @@ const output = {
     fundamental: ["月營收年增", "累計營收年增", "毛利率", "營益率", "淨利率", "流動比", "負債比", "本益比", "股價淨值比"],
     institutional: ["外資20日", "投信20日", "自營商20日", "三大法人5日", "法人買超天數"],
     entryPlan: "以MA20／MA60趨勢支撐、ATR14波動及20日高點計算模型進場區間、突破追蹤價與失效價",
+    capitalConcentration: "成交量與成交金額30分、法人集中30分、價量與OBV 25分、趨勢持續性15分；用於辨識公開市場資金集中訊號",
     usIndustry: "以對應美股產業龍頭20日報酬與均線趨勢作為景氣代理",
     selection: "掃描全部上市公司普通股；最近5個交易日平均成交量至少1,000張，且股價、成交金額、歷史行情、財務、法人與美股代理資料均須通過門檻，否則保留排除原因，不列入有效排名。總分排序後同一產業最多選入2檔。"
   },

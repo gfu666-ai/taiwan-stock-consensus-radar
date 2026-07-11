@@ -363,6 +363,12 @@ if (comparison.droppedTop12.length) {
   $("droppedList").innerHTML = comparison.droppedTop12.map(stock => `<article><div><span class="dropped-rank">上期 #${stock.previousRank}</span><strong>${esc(stock.code)} ${esc(stock.name)}</strong></div><div><span>${stock.currentRank ? `本期 #${stock.currentRank}` : "本期已排除"}</span><span>分數 ${formatNumber(stock.previousScore)} → ${stock.currentScore == null ? "—" : formatNumber(stock.currentScore)}</span></div><p>${esc(stock.reason)}</p></article>`).join("");
 }
 
+const capitalLevelClass = score => score >= 75 ? "high" : score >= 60 ? "flow" : score >= 45 ? "neutral" : "out";
+$("capitalRanking").innerHTML = recommendations.capitalConcentrationRanking.map(stock => {
+  const metric = stock.capitalConcentration;
+  return `<tr><td><strong>${stock.capitalRank}</strong></td><td><button class="stock-link" type="button" data-analysis-code="${esc(stock.code)}" aria-label="查看 ${esc(stock.code)} ${esc(stock.name)} 完整分析"><strong>${esc(stock.code)} ${esc(stock.name)}</strong></button><small>${esc(stock.focusName)}</small></td><td><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></td><td><div class="capital-score"><strong>${formatNumber(metric.score)}</strong><span><i style="width:${metric.score}%"></i></span></div></td><td><span class="capital-signal capital-${capitalLevelClass(metric.score)}">${esc(metric.label)}</span></td><td>${esc(metric.dominantSource)}<small>${formatShares(metric.dominantFlow5)}</small></td><td>${metric.consecutiveInflowDays} 日</td><td class="${metric.institutionalTotal5 >= 0 ? "positive" : "negative"}">${formatShares(metric.institutionalTotal5)}</td><td>${formatNumber(metric.volumeRatio5to20)} 倍</td><td>${formatNumber(metric.tradingValueRatio5to20)} 倍</td><td>${metric.warning ? `<span class="capital-warning">${esc(metric.warning)}</span>` : `<span class="capital-clear">未觸發退潮警示</span>`}</td></tr>`;
+}).join("");
+
 document.addEventListener("click", event => {
   const trigger = event.target.closest?.("[data-analysis-code]");
   if (trigger) {
