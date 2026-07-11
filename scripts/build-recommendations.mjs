@@ -1,6 +1,12 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const config = JSON.parse(readFileSync(new URL("../data/recommendation-config.json", import.meta.url), "utf8"));
+let previousOutput = null;
+try {
+  previousOutput = JSON.parse(readFileSync(new URL("../data/recommendations.json", import.meta.url), "utf8"));
+} catch {
+  // The first run has no prior snapshot to compare against.
+}
 const focusById = new Map(config.focuses.map(focus => [focus.id, focus]));
 const overrideByCode = new Map(config.focusOverrides.map(item => [item.code, item]));
 const TWSE_OPEN = "https://openapi.twse.com.tw/v1";
@@ -468,6 +474,43 @@ const allStocks = universe.map(candidate => {
 
 const scored = allStocks.filter(stock => stock.eligible).sort((a, b) => b.scores.total - a.scores.total);
 const excluded = allStocks.filter(stock => !stock.eligible).sort((a, b) => a.code.localeCompare(b.code));
+const previousCandidates = new Map((previousOutput?.candidates ?? []).map((stock, index) => [stock.code, {
+  rank: stock.currentRank ?? index + 1,
+  score: stock.scores?.total ?? null
+}]));
+const previousTop12 = (previousOutput?.candidates ?? []).slice(0, 12);
+
+scored.forEach((stock, index) => {
+  const prior = previousCandidates.get(stock.code);
+  stock.currentRank = index + 1;
+  stock.previousRank = prior?.rank ?? null;
+  stock.rankChange = prior ? prior.rank - stock.currentRank : null;
+  stock.scoreChange = prior && Number.isFinite(prior.score) ? round(stock.scores.total - prior.score) : null;
+  stock.movement = !prior ? "new" : stock.rankChange > 0 ? "up" : stock.rankChange < 0 ? "down" : "unchanged";
+});
+
+const currentByCode = new Map(allStocks.map(stock => [stock.code, stock]));
+const currentTop12Codes = new Set(scored.slice(0, 12).map(stock => stock.code));
+const previousTop12Codes = new Set(previousTop12.map(stock => stock.code));
+const newTop12 = scored.slice(0, 12).filter(stock => !previousTop12Codes.has(stock.code)).map(stock => ({
+  code: stock.code, name: stock.name, currentRank: stock.currentRank,
+  previousRank: stock.previousRank, scoreChange: stock.scoreChange
+}));
+const droppedTop12 = previousTop12.filter(stock => !currentTop12Codes.has(stock.code)).map(stock => {
+  const current = currentByCode.get(stock.code);
+  const previousRank = previousCandidates.get(stock.code)?.rank ?? null;
+  if (current?.eligible) return {
+    code: current.code, name: current.name, previousRank, currentRank: current.currentRank,
+    previousScore: stock.scores?.total ?? null, currentScore: current.scores.total,
+    scoreChange: round(current.scores.total - (stock.scores?.total ?? current.scores.total)),
+    reason: `排名降至第 ${current.currentRank} 名`
+  };
+  return {
+    code: stock.code, name: current?.name ?? stock.name, previousRank, currentRank: null,
+    previousScore: stock.scores?.total ?? null, currentScore: null, scoreChange: null,
+    reason: current?.exclusionReasons?.join("；") || "本期不在上市有效候選池"
+  };
+});
 
 const recommendations = [];
 const focusCounts = new Map();
@@ -483,6 +526,13 @@ const generatedAt = new Date().toISOString();
 const output = {
   generatedAt,
   dataAsOf: latestDate,
+  comparison: {
+    available: Boolean(previousOutput),
+    previousDataAsOf: previousOutput?.dataAsOf ?? null,
+    previousGeneratedAt: previousOutput?.generatedAt ?? null,
+    newTop12,
+    droppedTop12
+  },
   focusWindow: config.focusWindow,
   scope: "臺灣證券交易所全部上市公司普通股",
   disclaimer: "本模型為研究與風險排序工具，不保證報酬，也不構成個人化投資建議。",
@@ -503,7 +553,10 @@ const output = {
   candidates: scored,
   excluded: excluded.map(stock => ({
     code: stock.code, name: stock.name, industryName: stock.industryName,
-    latestPrice: stock.latestPrice, exclusionReasons: stock.exclusionReasons
+    latestPrice: stock.latestPrice,
+    previousRank: previousCandidates.get(stock.code)?.rank ?? null,
+    previousScore: previousCandidates.get(stock.code)?.score ?? null,
+    exclusionReasons: stock.exclusionReasons
   })),
   methodology: {
     technical: ["MA5/20/60", "RSI14", "MACD", "KD", "ATR14", "5/20/60日報酬", "量比", "OBV", "60日回撤"],

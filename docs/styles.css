@@ -92,6 +92,11 @@ footer { padding:40px 5vw; text-align:center; color:var(--muted); font-size:12px
 .subsection-heading { display:flex; justify-content:space-between; align-items:end; gap:20px; margin-top:42px; scroll-margin-top:84px; }
 .subsection-heading h3 { margin:0; font-size:28px; letter-spacing:-.03em; }
 .subsection-heading>p { margin:0; color:var(--muted); font-size:12px; }
+.ranking-changes { display:grid; grid-template-columns:repeat(3,minmax(120px,1fr)) 2fr; gap:1px; margin-top:18px; border:1px solid var(--line); background:var(--line); }
+.ranking-changes>div,.ranking-changes>p { margin:0; padding:12px 14px; background:white; }
+.ranking-changes span { display:block; color:var(--muted); font-size:11px; }
+.ranking-changes strong { display:block; margin-top:4px; font-size:17px; }
+.ranking-changes>p { display:flex; align-items:center; color:var(--muted); font-size:12px; }
 .table-swipe-hint { display:none; color:var(--muted); margin:12px 0 6px; font-size:12px; }
 .ranking-wrap { overflow:auto; margin-top:16px; background:white; border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow); scrollbar-color:var(--green) #e7e3da; }
 .ranking-wrap:focus-visible { outline-offset:4px; }
@@ -100,11 +105,28 @@ th,td { padding:12px 14px; text-align:right; border-bottom:1px solid var(--line)
 th { position:sticky; top:0; z-index:1; background:var(--ink); color:white; font-size:11px; letter-spacing:.04em; }
 tbody tr { transition:background .15s ease; }
 tbody tr:hover { background:#eef6e4; }
-th:nth-child(2),td:nth-child(2) { text-align:left; }
+th:nth-child(4),td:nth-child(4) { text-align:left; }
 td small { display:block; color:var(--muted); margin-top:3px; }
+.movement { display:inline-block; min-width:42px; font-weight:800; white-space:nowrap; }
+.movement-up,.score-change.positive { color:var(--green); }
+.movement-down,.score-change.negative { color:var(--red); }
+.movement-new { padding:4px 6px; background:var(--lime); color:var(--ink); font-size:11px; }
+.movement-flat { color:var(--muted); }
+.top12-badge { display:inline-block; margin-left:7px; padding:3px 5px; background:#e8f7d5; color:var(--green); font-size:10px; font-weight:800; }
+.score-change { font-weight:800; }
 .table-decision { display:inline-block; padding:5px 8px; border:1px solid currentColor; white-space:nowrap; font-size:12px; font-weight:800; }
 .stock-link { border:0; padding:4px 0; background:transparent; color:var(--ink); cursor:pointer; text-decoration:underline; text-decoration-color:var(--green); text-underline-offset:3px; }
 .stock-link:hover { color:var(--green); }
+.dropped-candidates { margin-top:26px; }
+.dropped-heading { display:flex; justify-content:space-between; align-items:end; gap:18px; }
+.dropped-heading h3 { margin:0; font-size:24px; }
+.dropped-heading>p { margin:0; color:var(--muted); font-size:12px; }
+.dropped-list { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:12px; }
+.dropped-list article { padding:16px; border:1px solid var(--line); border-left:4px solid var(--red); background:white; }
+.dropped-list article>div { display:flex; justify-content:space-between; gap:12px; margin-bottom:8px; color:var(--muted); font-size:12px; }
+.dropped-list article strong { color:var(--ink); font-size:15px; }
+.dropped-rank { color:var(--red); font-weight:800; }
+.dropped-list p { margin:0; color:var(--muted); line-height:1.45; font-size:12px; }
 .stock-analysis-panel { position:relative; margin-top:24px; padding:24px; background:white; border:1px solid var(--line); border-top:5px solid var(--green); border-radius:5px; box-shadow:0 22px 55px #1018201c; scroll-margin-top:76px; }
 .stock-analysis-panel[hidden] { display:none; }
 .analysis-header { position:sticky; top:64px; z-index:10; display:flex; justify-content:space-between; align-items:start; gap:18px; margin:-24px -24px 18px; padding:20px 24px 14px; background:#fffffff2; border-bottom:1px solid var(--line); backdrop-filter:blur(10px); }
@@ -163,7 +185,7 @@ tbody tr:nth-child(-n+3) { background:#f4fbe2; }
 .back-to-top:hover { transform:translateY(-2px); }
 @media(max-width:800px){.site-nav{min-height:56px;padding:0 16px;grid-template-columns:auto 1fr}.site-nav .updated{display:none}.nav-links{justify-content:flex-end;overflow-x:auto}.nav-links a{padding:8px 9px}.summary{grid-template-columns:1fr 1fr}.hero{min-height:auto}.section-heading,.subsection-heading{align-items:start;flex-direction:column}.stock-row{grid-template-columns:75px 1fr}.hero-copy{margin-top:42px}.table-swipe-hint{display:block}.analysis-header{top:56px}}
 @media(max-width:1000px){.recommendation-grid{grid-template-columns:1fr}.model-layout{grid-template-columns:1fr}.focus-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:800px){.recommendation-meta{text-align:left}.focus-grid{grid-template-columns:1fr}.analysis-summary{grid-template-columns:1fr 1fr}.entry-strategy-grid{grid-template-columns:1fr}.analysis-dashboard{grid-template-columns:1fr}.analysis-chart-card.wide-chart{grid-column:auto}.chart-card-heading{flex-direction:column}.chart-controls{justify-content:flex-start}.gauge-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){.recommendation-meta{text-align:left}.focus-grid{grid-template-columns:1fr}.ranking-changes{grid-template-columns:repeat(3,1fr)}.ranking-changes>p{grid-column:1/-1}.dropped-list{grid-template-columns:1fr}.analysis-summary{grid-template-columns:1fr 1fr}.entry-strategy-grid{grid-template-columns:1fr}.analysis-dashboard{grid-template-columns:1fr}.analysis-chart-card.wide-chart{grid-column:auto}.chart-card-heading{flex-direction:column}.chart-controls{justify-content:flex-start}.gauge-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){.summary{grid-template-columns:1fr}h1{font-size:58px}.recommendation-title{align-items:start;flex-direction:column}.score-breakdown{grid-template-columns:1fr}}
 @media(max-width:520px){.site-nav{gap:8px}.brand{font-size:12px}.nav-links{gap:0}.nav-links a{font-size:11px;padding:7px}.hero{padding-inline:20px}.section{padding:52px 0}.analysis-summary{grid-template-columns:1fr}.gauge-grid{grid-template-columns:1fr}.stock-analysis-panel{padding:16px}.analysis-header{margin:-16px -16px 16px;padding:16px}.back-to-top{right:14px;bottom:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.recommendation-card,.chart-mark,.mini-gauge i{transition:none}.analysis-loading span{animation:none}}

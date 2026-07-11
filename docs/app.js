@@ -34,6 +34,7 @@ const scoreLabels = {
 };
 const formatNumber = value => Number(value ?? 0).toLocaleString("zh-TW", { maximumFractionDigits: 2 });
 const formatShares = value => `${formatNumber(value / 1000)} 張`;
+const formatSigned = value => value == null ? "—" : `${value > 0 ? "+" : ""}${formatNumber(value)}`;
 const stockByCode = new Map(recommendations.candidates.map(stock => [stock.code, stock]));
 let technicalHistoryPromise;
 let activeAnalysis = null;
@@ -342,7 +343,25 @@ $("modelWeights").innerHTML = Object.entries(scoreLabels).map(([key, label]) => 
 $("decisionLegend").innerHTML = `<strong>買進判定：</strong><span class="decision-buy">≥ ${formatNumber(recommendations.decisionRules.buyMinScore)} 分且無重大風險：${esc(recommendations.decisionRules.buyLabel)}</span><span class="decision-watch">${formatNumber(recommendations.decisionRules.watchMinScore)}–${formatNumber(recommendations.decisionRules.buyMinScore - 0.01)} 分：${esc(recommendations.decisionRules.watchLabel)}</span><span class="decision-avoid">&lt; ${formatNumber(recommendations.decisionRules.watchMinScore)} 分：${esc(recommendations.decisionRules.avoidLabel)}</span>`;
 $("focusCards").innerHTML = recommendations.focuses.map(focus => `<article><p class="eyebrow">熱度 ${focus.heatScore} / 5</p><h3>${esc(focus.name)}</h3><p>${esc(focus.reason)}</p><small>美股代理：${esc(focus.usLeaders.join("、"))}</small><div>${focus.sources.map((source, index) => `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">產業來源 ${index + 1}</a>`).join(" · ")}</div></article>`).join("");
 
-$("candidateRanking").innerHTML = recommendations.candidates.slice(0, 12).map((stock, index) => `<tr><td>${index + 1}</td><td><button class="stock-link" type="button" data-analysis-code="${esc(stock.code)}" aria-label="查看 ${esc(stock.code)} ${esc(stock.name)} 完整分析"><strong>${esc(stock.code)} ${esc(stock.name)}</strong></button><small>${esc(stock.focusName)}</small></td><td><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></td><td>${formatNumber(stock.scores.total)}</td><td><span class="table-decision decision-${esc(stock.decision.level)}">${esc(stock.decision.label)}</span></td><td>${formatNumber(stock.scores.technical)}</td><td>${formatNumber(stock.scores.fundamental)}</td><td>${formatNumber(stock.scores.institutional)}</td><td>${formatNumber(stock.technical.return20d)}%</td><td>${formatShares(stock.institutional.total20)}</td></tr>`).join("");
+const comparison = recommendations.comparison ?? { available: false, newTop12: [], droppedTop12: [] };
+const newTop12Codes = new Set(comparison.newTop12.map(stock => stock.code));
+const movementLabel = stock => {
+  if (stock.previousRank == null) return `<span class="movement movement-new">新進</span>`;
+  if (stock.rankChange > 0) return `<span class="movement movement-up">▲ ${stock.rankChange}</span>`;
+  if (stock.rankChange < 0) return `<span class="movement movement-down">▼ ${Math.abs(stock.rankChange)}</span>`;
+  return `<span class="movement movement-flat">—</span>`;
+};
+
+$("rankingChanges").innerHTML = comparison.available
+  ? `<div><span>比較基準</span><strong>${esc(comparison.previousDataAsOf || "上次更新")}</strong></div><div><span>新進前 12</span><strong>${comparison.newTop12.length} 檔</strong></div><div><span>跌出前 12</span><strong>${comparison.droppedTop12.length} 檔</strong></div><p>排名升降與分數變化皆相較上次模型輸出。</p>`
+  : `<p>這是第一期快照；下次更新後開始顯示排名與分數變化。</p>`;
+
+$("candidateRanking").innerHTML = recommendations.candidates.slice(0, 12).map((stock, index) => `<tr><td><strong>${stock.currentRank ?? index + 1}</strong></td><td>${stock.previousRank ?? "—"}</td><td>${movementLabel(stock)}</td><td><button class="stock-link" type="button" data-analysis-code="${esc(stock.code)}" aria-label="查看 ${esc(stock.code)} ${esc(stock.name)} 完整分析"><strong>${esc(stock.code)} ${esc(stock.name)}</strong></button>${newTop12Codes.has(stock.code) ? `<span class="top12-badge">新進前12</span>` : ""}<small>${esc(stock.focusName)}</small></td><td><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></td><td>${formatNumber(stock.scores.total)}</td><td><span class="score-change ${stock.scoreChange > 0 ? "positive" : stock.scoreChange < 0 ? "negative" : ""}">${formatSigned(stock.scoreChange)}</span></td><td><span class="table-decision decision-${esc(stock.decision.level)}">${esc(stock.decision.label)}</span></td><td>${formatNumber(stock.scores.technical)}</td><td>${formatNumber(stock.scores.fundamental)}</td><td>${formatNumber(stock.scores.institutional)}</td><td>${formatNumber(stock.technical.return20d)}%</td><td>${formatShares(stock.institutional.total20)}</td></tr>`).join("");
+
+if (comparison.droppedTop12.length) {
+  $("droppedCandidates").hidden = false;
+  $("droppedList").innerHTML = comparison.droppedTop12.map(stock => `<article><div><span class="dropped-rank">上期 #${stock.previousRank}</span><strong>${esc(stock.code)} ${esc(stock.name)}</strong></div><div><span>${stock.currentRank ? `本期 #${stock.currentRank}` : "本期已排除"}</span><span>分數 ${formatNumber(stock.previousScore)} → ${stock.currentScore == null ? "—" : formatNumber(stock.currentScore)}</span></div><p>${esc(stock.reason)}</p></article>`).join("");
+}
 
 document.addEventListener("click", event => {
   const trigger = event.target.closest?.("[data-analysis-code]");
