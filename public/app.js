@@ -7,8 +7,8 @@ let data;
 let recommendations;
 try {
   const [dashboardResponse, recommendationResponse] = await Promise.all([
-    fetch("/data/dashboard.json"),
-    fetch("/data/recommendations.json")
+    fetch("/data/dashboard.json", { cache: "no-store" }),
+    fetch("/data/recommendations.json", { cache: "no-store" })
   ]);
   if (!dashboardResponse.ok || !recommendationResponse.ok) {
     throw new Error(`HTTP ${dashboardResponse.status}/${recommendationResponse.status}`);
