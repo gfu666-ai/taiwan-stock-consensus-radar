@@ -37,6 +37,7 @@ const formatShares = value => `${formatNumber(value / 1000)} 張`;
 const stockByCode = new Map(recommendations.candidates.map(stock => [stock.code, stock]));
 let technicalHistoryPromise;
 let activeAnalysis = null;
+let lastAnalysisTrigger = null;
 
 function movingAverage(values, period) {
   return values.map((_, index) => index + 1 < period ? null : values.slice(index + 1 - period, index + 1).reduce((total, value) => total + value, 0) / period);
@@ -308,8 +309,9 @@ async function openStockAnalysis(code) {
   const panel = $("stockAnalysisPanel");
   panel.hidden = false;
   $("analysisTitle").textContent = `${stock.code} ${stock.name} 多因子圖表分析`;
-  $("analysisBody").innerHTML = `<p class="analysis-loading">正在載入日K資料…</p>`;
+  $("analysisBody").innerHTML = `<div class="analysis-loading" role="status"><span aria-hidden="true"></span><p>正在載入日 K 與法人資料…</p></div>`;
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  requestAnimationFrame(() => panel.focus({ preventScroll: true }));
   try {
     technicalHistoryPromise ??= fetch("/data/technical-history.json", { cache: "no-store" }).then(response => {
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -330,18 +332,19 @@ $("recommendationMeta").innerHTML = `資料日 <strong>${esc(recommendations.dat
 $("recommendationCards").innerHTML = recommendations.recommendations.map(stock => {
   const scoreRows = Object.entries(scoreLabels).map(([key, label]) => `<div><span>${label}</span><strong>${formatNumber(stock.scores[key])}<small> / ${recommendations.weights[key]}</small></strong></div>`).join("");
   const risks = stock.riskFlags.length ? stock.riskFlags.map(risk => `<li>${esc(risk)}</li>`).join("") : "<li>模型未偵測到預設高風險旗標；仍須自行設定停損與部位上限。</li>";
-  return `<article class="recommendation-card"><div class="recommendation-rank">#${stock.rank}</div><p class="eyebrow">${esc(stock.focusName)}</p><div class="recommendation-title"><div><span>${esc(stock.code)}</span><h3>${esc(stock.name)}</h3></div><div class="total-score"><strong>${formatNumber(stock.scores.total)}</strong><span>/ 100</span></div></div><button class="analysis-trigger" type="button" data-analysis-code="${esc(stock.code)}">查看完整動態分析圖</button><div class="decision-badge decision-${esc(stock.decision.level)}"><strong>${esc(stock.decision.label)}</strong><span>${esc(stock.decision.reason)}</span></div><p class="latest-price">最近交易日 ${esc(stock.latestDate)} · 收盤 ${formatNumber(stock.latestPrice)} 元</p><div class="score-breakdown">${scoreRows}</div><h4>推薦依據</h4><ul>${stock.reasons.map(reason => `<li>${esc(reason)}</li>`).join("")}</ul><h4>風險與反證</h4><ul class="risk-list">${risks}</ul></article>`;
+  return `<article class="recommendation-card"><div class="recommendation-rank">#${stock.rank}</div><p class="eyebrow">${esc(stock.focusName)}</p><div class="recommendation-title"><div><span>${esc(stock.code)}</span><h3>${esc(stock.name)}</h3></div><div class="total-score"><strong>${formatNumber(stock.scores.total)}</strong><span>/ 100</span></div></div><button class="analysis-trigger" type="button" data-analysis-code="${esc(stock.code)}" aria-label="查看 ${esc(stock.code)} ${esc(stock.name)} 完整動態分析圖">查看完整動態分析圖</button><div class="decision-badge decision-${esc(stock.decision.level)}"><strong>${esc(stock.decision.label)}</strong><span>${esc(stock.decision.reason)}</span></div><p class="latest-price">最近交易日 ${esc(stock.latestDate)} · 收盤 ${formatNumber(stock.latestPrice)} 元</p><div class="score-breakdown">${scoreRows}</div><h4>推薦依據</h4><ul>${stock.reasons.map(reason => `<li>${esc(reason)}</li>`).join("")}</ul><h4>風險與反證</h4><ul class="risk-list">${risks}</ul></article>`;
 }).join("");
 
 $("modelWeights").innerHTML = Object.entries(scoreLabels).map(([key, label]) => `<div class="weight-row"><span>${label}</span><div><i style="width:${recommendations.weights[key]}%"></i></div><strong>${recommendations.weights[key]}%</strong></div>`).join("");
 $("decisionLegend").innerHTML = `<strong>買進判定：</strong><span class="decision-buy">≥ ${formatNumber(recommendations.decisionRules.buyMinScore)} 分且無重大風險：${esc(recommendations.decisionRules.buyLabel)}</span><span class="decision-watch">${formatNumber(recommendations.decisionRules.watchMinScore)}–${formatNumber(recommendations.decisionRules.buyMinScore - 0.01)} 分：${esc(recommendations.decisionRules.watchLabel)}</span><span class="decision-avoid">&lt; ${formatNumber(recommendations.decisionRules.watchMinScore)} 分：${esc(recommendations.decisionRules.avoidLabel)}</span>`;
 $("focusCards").innerHTML = recommendations.focuses.map(focus => `<article><p class="eyebrow">熱度 ${focus.heatScore} / 5</p><h3>${esc(focus.name)}</h3><p>${esc(focus.reason)}</p><small>美股代理：${esc(focus.usLeaders.join("、"))}</small><div>${focus.sources.map((source, index) => `<a href="${esc(source)}" target="_blank" rel="noopener noreferrer">產業來源 ${index + 1}</a>`).join(" · ")}</div></article>`).join("");
 
-$("candidateRanking").innerHTML = recommendations.candidates.slice(0, 12).map((stock, index) => `<tr><td>${index + 1}</td><td><button class="stock-link" type="button" data-analysis-code="${esc(stock.code)}"><strong>${esc(stock.code)} ${esc(stock.name)}</strong></button><small>${esc(stock.focusName)}</small></td><td><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></td><td>${formatNumber(stock.scores.total)}</td><td><span class="table-decision decision-${esc(stock.decision.level)}">${esc(stock.decision.label)}</span></td><td>${formatNumber(stock.scores.technical)}</td><td>${formatNumber(stock.scores.fundamental)}</td><td>${formatNumber(stock.scores.institutional)}</td><td>${formatNumber(stock.technical.return20d)}%</td><td>${formatShares(stock.institutional.total20)}</td></tr>`).join("");
+$("candidateRanking").innerHTML = recommendations.candidates.slice(0, 12).map((stock, index) => `<tr><td>${index + 1}</td><td><button class="stock-link" type="button" data-analysis-code="${esc(stock.code)}" aria-label="查看 ${esc(stock.code)} ${esc(stock.name)} 完整分析"><strong>${esc(stock.code)} ${esc(stock.name)}</strong></button><small>${esc(stock.focusName)}</small></td><td><strong>${formatNumber(stock.latestPrice)} 元</strong><small>${esc(stock.latestDate)}</small></td><td>${formatNumber(stock.scores.total)}</td><td><span class="table-decision decision-${esc(stock.decision.level)}">${esc(stock.decision.label)}</span></td><td>${formatNumber(stock.scores.technical)}</td><td>${formatNumber(stock.scores.fundamental)}</td><td>${formatNumber(stock.scores.institutional)}</td><td>${formatNumber(stock.technical.return20d)}%</td><td>${formatShares(stock.institutional.total20)}</td></tr>`).join("");
 
 document.addEventListener("click", event => {
   const trigger = event.target.closest?.("[data-analysis-code]");
   if (trigger) {
+    lastAnalysisTrigger = trigger;
     openStockAnalysis(trigger.dataset.analysisCode);
     return;
   }
@@ -387,9 +390,31 @@ analysisPanel.addEventListener("pointermove", event => showChartTooltip(event.ta
 analysisPanel.addEventListener("pointerleave", () => analysisPanel.querySelector(".chart-tooltip")?.classList.remove("visible"));
 analysisPanel.addEventListener("focusin", event => showChartTooltip(event.target.closest?.("[data-tip]")));
 analysisPanel.addEventListener("focusout", () => analysisPanel.querySelector(".chart-tooltip")?.classList.remove("visible"));
-$("closeAnalysis").addEventListener("click", () => {
+function closeStockAnalysis() {
   $("stockAnalysisPanel").hidden = true;
+  lastAnalysisTrigger?.focus();
+}
+$("closeAnalysis").addEventListener("click", closeStockAnalysis);
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && !$("stockAnalysisPanel").hidden) closeStockAnalysis();
 });
+
+const backToTop = $("backToTop");
+window.addEventListener("scroll", () => {
+  backToTop.hidden = window.scrollY < 640;
+}, { passive: true });
+backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+const navigationLinks = [...document.querySelectorAll(".nav-links a")];
+const observedSections = navigationLinks.map(link => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+if ("IntersectionObserver" in window) {
+  const sectionObserver = new IntersectionObserver(entries => {
+    const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    navigationLinks.forEach(link => link.toggleAttribute("aria-current", link.getAttribute("href") === `#${visible.target.id}`));
+  }, { rootMargin: "-20% 0px -65%", threshold: [0, .2, .5] });
+  observedSections.forEach(section => sectionObserver.observe(section));
+}
 
 const maxMentions = Math.max(1, ...data.stocks.map(stock => stock.videoCount));
 $("stocks").innerHTML = data.stocks.map(stock => `<div class="stock-row"><span class="ticker">${esc(stock.ticker || "未確認")}</span><div><strong>${esc(stock.name)}</strong><div class="bar"><span style="width:${stock.videoCount / maxMentions * 100}%"></span></div><small>${stock.videoCount} 支影片提及 · ${stock.mentionCount} 次文字命中</small></div></div>`).join("") || `<p>尚無通過證據檢驗的個股。</p>`;
