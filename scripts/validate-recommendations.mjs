@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 
 const data = JSON.parse(readFileSync(new URL("../data/recommendations.json", import.meta.url), "utf8"));
 const history = JSON.parse(readFileSync(new URL("../data/technical-history.json", import.meta.url), "utf8"));
+const performance = JSON.parse(readFileSync(new URL("../data/model-performance.json", import.meta.url), "utf8"));
 const weights = data.weights;
 const maxima = {
   technical: weights.technical,
@@ -76,6 +77,8 @@ const checks = [
   ["美股映射", data.recommendations.every(stock => stock.usIndustry.length >= 2), "每檔至少對應 2 檔美國產業龍頭"],
   ["產業分散", data.focuses.every(focus => data.recommendations.filter(stock => stock.focusId === focus.id).length <= 2), "單一產業最多 2 檔"],
   ["風險揭露", data.recommendations.every(stock => Array.isArray(stock.riskFlags)) && /不保證報酬/.test(data.disclaimer), "保留個股風險旗標與非保證聲明"]
+  ,["模型快照稽核", data.modelAudit?.immutableSnapshot === true && performance.modelVersion === data.modelAudit.modelVersion && performance.snapshotCount >= 1, "保存不可覆寫的每日模型快照並輸出向前驗證狀態"]
+  ,["勝率誠實揭露", performance.sampleSufficient || (performance.targetObserved === false && performance.targetStatisticallySupported === false), "樣本不足時不得宣稱達成目標勝率"]
 ];
 
 const failures = checks.filter(([, passed]) => !passed);

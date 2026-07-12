@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
 const config = JSON.parse(readFileSync(new URL("../data/recommendation-config.json", import.meta.url), "utf8"));
 let previousOutput = null;
@@ -587,6 +587,10 @@ for (const stock of scored.filter(stock => stock.eligible)) {
 if (recommendations.length !== 3) throw new Error(`Expected 3 recommendations, got ${recommendations.length}`);
 
 const generatedAt = new Date().toISOString();
+const snapshotDirectory = new URL("../data/model-snapshots/", import.meta.url);
+const snapshotUrl = new URL(`${latestDate}.json`, snapshotDirectory);
+mkdirSync(snapshotDirectory, { recursive: true });
+const snapshotRecorded = !existsSync(snapshotUrl);
 const output = {
   generatedAt,
   dataAsOf: latestDate,
@@ -598,6 +602,14 @@ const output = {
     droppedTop12
   },
   focusWindow: config.focusWindow,
+  modelAudit: {
+    modelVersion: config.evaluationPolicy.modelVersion,
+    snapshotDate: latestDate,
+    snapshotRecorded,
+    immutableSnapshot: true,
+    validationStatus: "累積樣本中；不得在樣本外結果完成前宣稱目標勝率",
+    pointInTimeCaveat: "快照保存本次執行時可觀察資料；財報與產業熱度尚缺歷史公告版本，因此只允許自快照啟用日起向前驗證。"
+  },
   scope: "臺灣證券交易所全部上市公司普通股",
   disclaimer: "本模型為研究與風險排序工具，不保證報酬，也不構成個人化投資建議。",
   weights: config.weights,
@@ -639,6 +651,35 @@ const output = {
     usMarket: "https://query1.finance.yahoo.com/v8/finance/chart/"
   }
 };
+
+if (snapshotRecorded) {
+  const snapshot = {
+    schemaVersion: 1,
+    generatedAt,
+    dataAsOf: latestDate,
+    modelVersion: config.evaluationPolicy.modelVersion,
+    evaluationPolicy: config.evaluationPolicy,
+    weights: config.weights,
+    decisionRules: config.decisionRules,
+    recommendations: recommendations.map(stock => ({
+      code: stock.code, name: stock.name, rank: stock.rank, latestPrice: stock.latestPrice,
+      totalScore: stock.scores.total, componentScores: stock.scores,
+      decision: stock.decision, riskFlags: stock.riskFlags,
+      entryPlan: stock.entryPlan, capitalConcentrationScore: stock.capitalConcentration.score
+    })),
+    candidates: scored.map(stock => ({
+      code: stock.code, name: stock.name, rank: stock.currentRank,
+      latestPrice: stock.latestPrice, totalScore: stock.scores.total,
+      componentScores: stock.scores, decisionLevel: stock.decision.level,
+      exclusionReasons: stock.exclusionReasons
+    })),
+    marketBars: Object.fromEntries(allStocks.map(stock => {
+      const bar = histories.get(stock.code)?.find(row => row.date === latestDate) ?? histories.get(stock.code)?.at(-1);
+      return [stock.code, bar ? { date: bar.date, open: bar.open, high: bar.high, low: bar.low, close: bar.close } : null];
+    }).filter(([, bar]) => bar?.date === latestDate))
+  };
+  writeFileSync(snapshotUrl, `${JSON.stringify(snapshot, null, 2)}\n`);
+}
 
 writeFileSync(new URL("../data/recommendations.json", import.meta.url), `${JSON.stringify(output, null, 2)}\n`);
 const technicalHistory = {

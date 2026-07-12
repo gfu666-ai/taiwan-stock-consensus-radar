@@ -126,5 +126,16 @@
       "最新月營收年減",
       "三大法人合計賣超"
     ]
+  },
+  "evaluationPolicy": {
+    "modelVersion": "baseline-v1",
+    "holdingTradingDays": 20,
+    "takeProfitPct": 12,
+    "stopLossPct": -7,
+    "slippagePctEachSide": 0.1,
+    "commissionPctEachSide": 0.1425,
+    "sellTaxPct": 0.3,
+    "minimumCompletedTrades": 30,
+    "targetWinRatePct": 80
   }
 }

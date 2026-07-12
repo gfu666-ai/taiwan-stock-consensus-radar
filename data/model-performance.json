@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-12T04:31:07.158Z",
+  "modelVersion": "baseline-v1",
+  "policy": {
+    "modelVersion": "baseline-v1",
+    "holdingTradingDays": 20,
+    "takeProfitPct": 12,
+    "stopLossPct": -7,
+    "slippagePctEachSide": 0.1,
+    "commissionPctEachSide": 0.1425,
+    "sellTaxPct": 0.3,
+    "minimumCompletedTrades": 30,
+    "targetWinRatePct": 80
+  },
+  "snapshotCount": 1,
+  "firstSnapshotDate": "2026-07-09",
+  "latestSnapshotDate": "2026-07-09",
+  "completedSignalDates": 0,
+  "status": "樣本累積中，尚未完成勝率驗證",
+  "sampleSufficient": false,
+  "targetObserved": false,
+  "targetStatisticallySupported": false,
+  "metrics": {
+    "completedTrades": 0,
+    "wins": 0,
+    "losses": 0,
+    "winRatePct": null,
+    "winRate95Pct": {
+      "low": null,
+      "high": null
+    },
+    "averageNetReturnPct": null,
+    "profitFactor": 0
+  },
+  "caveats": [
+    "只使用模型快照建立後實際向前出現的行情，不回填過去訊號。",
+    "進場採訊號後下一交易日開盤，並計入雙邊滑價、手續費與賣出證交稅。",
+    "樣本未達最低交易數時不得宣稱勝率；達標後仍須同時檢查95%信賴區間、平均報酬與Profit Factor。",
+    "財報與產業熱度歷史公告版本尚未完整，因此本驗證只適用於快照啟用日之後。"
+  ],
+  "trades": []
+}

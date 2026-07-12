@@ -14,6 +14,8 @@ npm.cmd run validate
 npm.cmd start
 ```
 
+`npm.cmd run recommend` 會在 `data/model-snapshots/` 保存當日首次模型快照，並更新 `data/model-performance.json`。同一資料日重跑不會覆寫快照；訊號滿 20 個交易日後，才依下一日開盤、停損停利、滑價與交易成本列入樣本外績效。
+
 開啟 `http://127.0.0.1:4173`。
 
 `docs/` 是可直接發布到 GitHub Pages 的靜態網站版本。

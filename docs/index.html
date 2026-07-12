@@ -5,7 +5,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>台股多因子推薦雷達</title>
-  <link rel="stylesheet" href="./styles.css?v=6c6aab53fee6">
+  <link rel="stylesheet" href="./styles.css?v=5ad895ccb99d">
 </head>
 <body>
   <a class="skip-link" href="#recommendations">跳到推薦名單</a>
@@ -13,6 +13,7 @@
     <a class="brand" href="#top" aria-label="回到頁首">TWSIGNAL</a>
     <div class="nav-links">
       <a href="#recommendations">推薦</a>
+      <a href="#validation">驗證</a>
       <a href="#methodology">評分</a>
       <a href="#candidates">候選</a>
       <a href="#capital">資金</a>
@@ -33,6 +34,13 @@
     <section id="recommendations" class="section recommendation-section">
       <div class="section-heading"><div><p class="eyebrow">TOP 3 RESEARCH LIST</p><h2>三檔推薦名單</h2></div><p id="recommendationMeta" class="recommendation-meta"></p></div>
       <div id="recommendationCards" class="recommendation-grid"></div>
+    </section>
+
+    <section id="validation" class="section validation-section">
+      <div class="section-heading"><div><p class="eyebrow">FORWARD MODEL VALIDATION</p><h2>模型勝率驗證</h2></div><p class="fine-print">只採快照建立後的樣本外結果，不回填歷史訊號。</p></div>
+      <div id="validationStatus" class="validation-status"></div>
+      <div id="validationMetrics" class="validation-metrics"></div>
+      <div id="validationPolicy" class="validation-policy"></div>
     </section>
 
     <section id="methodology" class="section model-section">
@@ -60,6 +68,6 @@
 
   <button id="backToTop" class="back-to-top" type="button" aria-label="回到頁首" hidden>↑</button>
   <footer>本頁為公開影音內容的整理與研究工具，不構成投資建議。</footer>
-  <script type="module" src="./app.js?v=6c6aab53fee6"></script>
+  <script type="module" src="./app.js?v=5ad895ccb99d"></script>
 </body>
 </html>

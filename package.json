@@ -7,7 +7,7 @@
     "start": "node server.mjs",
     "transcripts": "node scripts/fetch-transcripts.mjs",
     "build:data": "node scripts/build-dashboard.mjs",
-    "recommend": "node scripts/build-recommendations.mjs",
+    "recommend": "node scripts/build-recommendations.mjs && node scripts/build-model-performance.mjs",
     "build:site": "node scripts/build-site.mjs",
     "validate": "node scripts/validate-data.mjs && node scripts/validate-recommendations.mjs"
   },

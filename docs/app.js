@@ -5,15 +5,17 @@ const esc = value => String(value ?? "").replace(/[&<>\"]/g, character => ({
 
 let data;
 let recommendations;
+let performance;
 try {
-  const [dashboardResponse, recommendationResponse] = await Promise.all([
+  const [dashboardResponse, recommendationResponse, performanceResponse] = await Promise.all([
     fetch("./data/dashboard.json", { cache: "no-store" }),
-    fetch("./data/recommendations.json", { cache: "no-store" })
+    fetch("./data/recommendations.json", { cache: "no-store" }),
+    fetch("./data/model-performance.json", { cache: "no-store" })
   ]);
-  if (!dashboardResponse.ok || !recommendationResponse.ok) {
-    throw new Error(`HTTP ${dashboardResponse.status}/${recommendationResponse.status}`);
+  if (!dashboardResponse.ok || !recommendationResponse.ok || !performanceResponse.ok) {
+    throw new Error(`HTTP ${dashboardResponse.status}/${recommendationResponse.status}/${performanceResponse.status}`);
   }
-  [data, recommendations] = await Promise.all([dashboardResponse.json(), recommendationResponse.json()]);
+  [data, recommendations, performance] = await Promise.all([dashboardResponse.json(), recommendationResponse.json(), performanceResponse.json()]);
 } catch (error) {
   document.body.innerHTML = `<main class="load-error"><h1>資料載入失敗</h1><p>無法讀取 Dashboard 資料（${esc(error.message)}）。請重新整理，或確認 data/dashboard.json 已產生。</p></main>`;
   throw error;
@@ -39,6 +41,18 @@ const stockByCode = new Map(recommendations.candidates.map(stock => [stock.code,
 let technicalHistoryPromise;
 let activeAnalysis = null;
 let lastAnalysisTrigger = null;
+
+const metricValue = (value, suffix = "") => value == null ? "待累積" : `${formatNumber(value)}${suffix}`;
+$("validationStatus").innerHTML = `<div><span class="validation-badge ${performance.sampleSufficient ? "validated" : "collecting"}">${esc(performance.status)}</span><h3>${performance.sampleSufficient ? `已完成 ${formatNumber(performance.metrics.completedTrades)} 筆樣本外交易` : `目前 ${formatNumber(performance.snapshotCount)} 期快照，尚不可宣稱勝率`}</h3><p>${performance.targetStatisticallySupported ? `95% 信賴區間下限已達目標 ${formatNumber(performance.policy.targetWinRatePct)}%。` : `目標為 ${formatNumber(performance.policy.targetWinRatePct)}%，必須至少完成 ${formatNumber(performance.policy.minimumCompletedTrades)} 筆交易，且同時檢查信賴區間與獲利品質。`}</p></div>`;
+$("validationMetrics").innerHTML = [
+  ["完成交易", performance.metrics.completedTrades, " 筆"],
+  ["樣本外勝率", performance.metrics.winRatePct, "%"],
+  ["95% 信賴區間", performance.metrics.winRate95Pct.low == null ? null : `${formatNumber(performance.metrics.winRate95Pct.low)}–${formatNumber(performance.metrics.winRate95Pct.high)}`, "%"],
+  ["平均淨報酬", performance.metrics.averageNetReturnPct, "%"],
+  ["Profit Factor", performance.metrics.profitFactor, ""],
+  ["完成訊號日", performance.completedSignalDates, " 期"]
+].map(([label, value, suffix]) => `<div><span>${label}</span><strong>${typeof value === "string" ? value + suffix : metricValue(value, suffix)}</strong></div>`).join("");
+$("validationPolicy").innerHTML = `<strong>固定回測規則</strong><span>訊號後下一交易日開盤進場</span><span>持有 ${performance.policy.holdingTradingDays} 日</span><span>停損 ${formatNumber(performance.policy.stopLossPct)}%</span><span>停利 +${formatNumber(performance.policy.takeProfitPct)}%</span><span>含滑價、手續費與證交稅</span><p>${esc(performance.caveats[2])}</p>`;
 
 function movingAverage(values, period) {
   return values.map((_, index) => index + 1 < period ? null : values.slice(index + 1 - period, index + 1).reduce((total, value) => total + value, 0) / period);
