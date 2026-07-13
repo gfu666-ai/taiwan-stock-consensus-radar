@@ -48,8 +48,10 @@ async function fetchTradingDates(latestDate) {
   const payload = await fetchJson("https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?range=6mo&interval=1d");
   const result = payload.chart?.result?.[0];
   if (!result) throw new Error("Trading calendar is unavailable");
-  return result.timestamp.map(timestamp => new Date(timestamp * 1000).toISOString().slice(0, 10))
-    .filter(date => date <= latestDate).slice(-config.universe.historyTradingDays);
+  const dates = result.timestamp.map(timestamp => new Date(timestamp * 1000).toISOString().slice(0, 10))
+    .filter(date => date <= latestDate);
+  if (!dates.includes(latestDate)) dates.push(latestDate);
+  return [...new Set(dates)].sort().slice(-config.universe.historyTradingDays);
 }
 
 function parseMarketDay(payload, date) {
@@ -60,6 +62,32 @@ function parseMarketDay(payload, date) {
     volume: number(row[2]), tradingValue: number(row[4]),
     open: number(row[5]), high: number(row[6]), low: number(row[7]), close: number(row[8])
   })).filter(row => /^\d{4}$/.test(row.code) && row.close != null);
+}
+
+function taipeiIsoDate() {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit"
+  }).formatToParts(new Date());
+  const value = Object.fromEntries(parts.map(part => [part.type, part.value]));
+  return `${value.year}-${value.month}-${value.day}`;
+}
+
+async function resolveLatestMarketDate(fallbackDate) {
+  const today = taipeiIsoDate();
+  const anchor = new Date(`${today}T00:00:00Z`);
+  for (let offset = 0; offset < 10; offset += 1) {
+    const candidateDate = new Date(anchor);
+    candidateDate.setUTCDate(candidateDate.getUTCDate() - offset);
+    const candidate = candidateDate.toISOString().slice(0, 10);
+    if (candidate <= fallbackDate) break;
+    try {
+      const payload = await fetchJson(`${TWSE_RWD}/afterTrading/MI_INDEX?date=${candidate.replaceAll("-", "")}&type=ALLBUT0999&response=json`);
+      if (payload.stat === "OK" && parseMarketDay(payload, candidate).length) return candidate;
+    } catch (error) {
+      console.warn(`Latest market date probe failed for ${candidate}: ${error.message}`);
+    }
+  }
+  return fallbackDate;
 }
 
 async function fetchAllMarketHistory(tradingDates) {
@@ -452,7 +480,7 @@ const incomeByCode = new Map(incomeRows.map(row => [row["公司代號"], row]));
 const balanceByCode = new Map(balanceRows.map(row => [row["公司代號"], row]));
 const latestRocDate = market.find(row => /^\d{4}$/.test(row.Code))?.Date;
 if (!latestRocDate) throw new Error("TWSE latest trading date is unavailable");
-const latestDate = rocDateToIso(latestRocDate);
+const latestDate = await resolveLatestMarketDate(rocDateToIso(latestRocDate));
 
 const universe = companyRows.filter(company => /^\d{4}$/.test(company["公司代號"])).map(company => {
   const code = company["公司代號"];
@@ -501,7 +529,9 @@ const allStocks = universe.map(candidate => {
     industryHeat: focusById.get(candidate.focusId)?.heatScore ?? 0
   };
   const exclusionReasons = [];
-  const latestPrice = number(marketRow?.ClosingPrice);
+  const latestPrice = history.at(-1)?.date === latestDate
+    ? history.at(-1).close
+    : number(marketRow?.ClosingPrice);
   if (latestPrice == null || latestPrice < config.universe.minimumPrice) exclusionReasons.push(`股價低於 ${config.universe.minimumPrice} 元或無成交價`);
   if (technical.historyDays < config.universe.minimumHistoryDays) exclusionReasons.push(`日K不足 ${config.universe.minimumHistoryDays} 日`);
   if (technical.averageVolume5 == null || technical.averageVolume5 < config.universe.minimumAverageVolume5) exclusionReasons.push(`最近5個交易日平均成交量低於 ${Math.round(config.universe.minimumAverageVolume5 / 1000).toLocaleString("en-US")} 張`);
