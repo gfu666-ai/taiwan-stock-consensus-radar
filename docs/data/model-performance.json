@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-15T11:37:40.655Z",
+  "generatedAt": "2026-07-17T13:54:52.172Z",
   "modelVersion": "baseline-v1",
   "policy": {
     "modelVersion": "baseline-v1",
@@ -12,9 +12,9 @@
     "minimumCompletedTrades": 30,
     "targetWinRatePct": 80
   },
-  "snapshotCount": 4,
+  "snapshotCount": 5,
   "firstSnapshotDate": "2026-07-09",
-  "latestSnapshotDate": "2026-07-15",
+  "latestSnapshotDate": "2026-07-17",
   "completedSignalDates": 0,
   "status": "樣本累積中，尚未完成勝率驗證",
   "sampleSufficient": false,
