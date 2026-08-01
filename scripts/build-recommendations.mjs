@@ -7,6 +7,9 @@ try {
 } catch {
   // The first run has no prior snapshot to compare against.
 }
+const previousFundamentalByCode = new Map((previousOutput?.candidates ?? [])
+  .filter(stock => stock.fundamental)
+  .map(stock => [stock.code, stock.fundamental]));
 const focusById = new Map(config.focuses.map(focus => [focus.id, focus]));
 const overrideByCode = new Map(config.focusOverrides.map(item => [item.code, item]));
 const TWSE_OPEN = "https://openapi.twse.com.tw/v1";
@@ -237,6 +240,19 @@ function financialMetrics(revenue, income, balance, valuation, industryCode) {
     debtRatio: assets && liabilities != null ? liabilities / assets * 100 : null,
     pe: number(valuation?.PEratio), pb: number(valuation?.PBratio), dividendYield: number(valuation?.DividendYield),
     fiscalPeriod: income ? `${income["年度"]}Q${income["季別"]}` : null
+  };
+}
+
+function retainPriorStatements(current, prior) {
+  if (!prior || scoreFundamental(current) != null) return current;
+  return {
+    ...prior,
+    revenueMonth: current.revenueMonth ?? prior.revenueMonth,
+    revenueYoY: current.revenueYoY ?? prior.revenueYoY,
+    revenueCumulativeYoY: current.revenueCumulativeYoY ?? prior.revenueCumulativeYoY,
+    pe: current.pe ?? prior.pe,
+    pb: current.pb ?? prior.pb,
+    dividendYield: current.dividendYield ?? prior.dividendYield
   };
 }
 
@@ -515,10 +531,10 @@ const allStocks = universe.map(candidate => {
   const marketRow = marketByCode.get(candidate.code);
   const history = histories.get(candidate.code) ?? [];
   const technical = technicalMetrics(history);
-  const fundamental = financialMetrics(
+  const fundamental = retainPriorStatements(financialMetrics(
     revenueByCode.get(candidate.code), incomeByCode.get(candidate.code),
     balanceByCode.get(candidate.code), valuationByCode.get(candidate.code), candidate.industryCode
-  );
+  ), previousFundamentalByCode.get(candidate.code));
   const institutional = institutionalMetrics(candidate.code, institutionalDays, technical.averageVolume20);
   const usIndustry = candidate.usLeaders.map(symbol => usMetrics.get(symbol)).filter(Boolean);
   const scores = {
